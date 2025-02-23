@@ -1,0 +1,275 @@
+% LTeX: language=en-GB
+
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm, physics}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{graphicx, float}
+
+\usepackage[backend=biber, style=numeric, language=british,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+\graphicspath{{images/}}
+
+\usepackage[a4paper, top=1in, bottom=1in, left=1in, right=1in, heightrounded]{geometry}
+\renewcommand{\baselinestretch}{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+
+\allowdisplaybreaks
+
+\title{The use of quaternions in the computation of 3D rotations}
+\author{Shayan Nezami}
+\date{\today}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\begin{document}
+
+\maketitle	
+\pagebreak
+
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+
+\subsection{What are quaternions?}
+
+Quaternions are a 4-dimensional number system that extend the complex numbers, in a similar way that the complex numbers extend the real numbers. Denoted $\mathbb{H}$, they are of the form:
+\begin{equation}
+    a + b\vb{i} + c\vb{j} + d\vb{k}, \quad a, b, c, d \in \mathbb{R}.
+\end{equation}
+In the modern day, they are used extensively in representing the rotations of 3-dimensional objects in computer systems, due to the relative computational ease of calculating such rotations, which only involves the multiplication of real numbers, and is not susceptible to problems like gimbal lock, unlike Euler angles, which are perhaps easier to visualise, and more widely used outside computational settings. \cite{QuaternionWiki}
+
+\subsection{The structure of this essay}
+
+After this brief introduction, some widely used key terms relating to quaternions will be defined, which will be essential to understanding the following chapters. Next, the additive and (more importantly) multiplicative properties of quaternions will be covered, which in effect govern how they are able to represent 3D rotations.
+
+Having covered these areas, the mechanism in which they can be used for rotations will be discussed in depth, including relevant proofs and the properties which make them desirable to use. The essay will finish with comparisons to other methods of representing 3D rotations, as well as an example application of quaternions in a computational setting.
+
+\subsection{Definitions}
+
+\subsubsection{Pure quaternions}
+
+A pure quaternion is a quaternion where there is no real component, meaning for a quaternion $a + b\vb{i} + c\vb{j} + d\vb{k}$, $a = 0$. \cite{Math431}
+
+They are also known as vector quaternions, as pure quaternions can be used to represent vectors in quaternion form, where $\vb{i, j, k}$ represent the $x, y, z$ components of a vector.
+
+For example, the vector $(2,3,1)$ can be represented as the quaternion $2\vb{i} + 3\vb{j} + \vb{k}$.
+
+\subsubsection{Unit quaternions}
+
+A unit quaternion is a quaternion with norm 1, i.e: $\abs{q} = 1$ for a quaternion, $q$. \cite{DRose}
+
+\subsubsection{The norm of a quaternion}
+
+The norm, $\abs{q}$, of a quaternion, $q$, is defined as:
+\begin{equation}
+    \begin{aligned}
+        &\abs{q} = \sqrt{a^2 + b^2 + c^2 + d^2}, \\
+        \text{where } & q = a + b\vb{i} + c\vb{j} + d\vb{k}.
+    \end{aligned} 
+\end{equation}
+This could be thought of as similar to the magnitude of a vector, giving the theoretical ``length'' of the quaternion. \cite{Math431}
+
+This is referred to as the norm, as it is what each component of a quaternion needs to be divided by to normalise it (to get its corresponding unit quaternion - one with the same theoretical ``direction'').
+
+For example, to normalise the quaternion
+\begin{equation}
+    q = 2 + 3\vb{i} - 4\vb{j} + 5\vb{k},
+\end{equation}
+one would first find its norm:
+\begin{equation}
+    \abs{q} = \sqrt{2^2 + 3^2 + (-4)^2 + 5^2} = 3\sqrt{6},
+\end{equation}
+and then divide each of its components by the norm:
+\begin{equation}
+    q_u = \frac{2}{3\sqrt{6}}+\frac{3}{3\sqrt{6}}\vb{i}+\frac{4}{3\sqrt{6}}\vb{j}+\frac{5}{3\sqrt{6}}\vb{k}.
+\end{equation}
+It can be proven that this is indeed a unit quaternion, as
+\begin{equation}
+    \abs{q_u} = \sqrt{\left(\frac{2}{3\sqrt{6}}\right)^2+\left(\frac{3}{3\sqrt{6}}\right)^2+\left(\frac{4}{3\sqrt{6}}\right)^2+\left(\frac{5}{3\sqrt{6}}\right)^2} = 1.
+\end{equation}
+
+\subsubsection{The conjugate of a quaternion}
+
+Every quaternion, $q$, has a conjugate, $\bar{q}$, which is defined as:
+\begin{equation}
+    \begin{aligned}
+        &\bar{q} = a - b\vb{i} - c\vb{j} - d\vb{k}, \\
+        \text{where } & q = a + b\vb{i} + c\vb{j} + d\vb{k}.
+    \end{aligned}
+\end{equation}
+Note that $\bar{q}$ can also be written $q^*$. \cite{DRose}
+
+\pagebreak
+\section{Defining Properties of Quaternions}
+
+The algebraic field of quaternions is defined by certain core properties, which are explored below.
+
+The additive properties are mostly included for context and completeness, while the multiplicative properties are essential for the rotation calculations that will follow - it is in effect these multiplicative properties that mean quaternions are able to compute 3D rotation.
+
+Throughout this section it is to be assumed that $q_n \in \mathbb{H}$, and $a_n, b_n, c_n, d_n \in \mathbb{R}$.
+
+\subsection{Additive properties}
+
+\subsubsection{Closure}
+
+Quaternions are considered closed upon addition. This means that:
+\begin{equation}
+    q_1, q_2 \in \mathbb{H} \implies q_1 + q_2 \in \mathbb{H}.
+\end{equation}
+In words, the addition of any two quaternions will necessarily produce a quaternion. \cite{Illinois}
+
+\subsubsection{Commutativity and associativity}
+
+Quaternion addition is both commutative,
+\begin{equation}
+    q_1 + q_2 = q_2 + q_1,
+\end{equation}
+and associative \cite{Illinois},
+\begin{equation}
+    (q_1 + q_2) + q_3 = q_1 + (q_2 + q_3).
+\end{equation}
+While this may seem obvious, this is not to be assumed for all number systems. In fact, the multiplication of quaternions, though associative, is not commutative. This will be further discussed later.
+
+\subsubsection{Calculating addition and subtraction}
+
+Summing and finding the difference of two quaternions is relatively straightforward - it simply consists of adding or subtracting each component of the quaternions: \cite{Illinois}
+\begin{equation}
+    \begin{aligned}
+        q_1 + q_2 & = (a_1 + b_1\vb{i} + c_1\vb{k} + d_1\vb{k}) + (a_2 + b_2\vb{i} + c_2\vb{k} + d_2\vb{k}) \\
+                  & = (a_1+a_2) + (b_1+b_2)\vb{i} + (c_1+c_2)\vb{k} + (d_1+d_2)\vb{k},
+    \end{aligned}
+\end{equation}
+\begin{equation}
+    \begin{aligned}
+        q_1 - q_2 & = (a_1 + b_1\vb{i} + c_1\vb{k} + d_1\vb{k}) - (a_2 + b_2\vb{i} + c_2\vb{k} + d_2\vb{k}) \\
+                  & = (a_1-a_2) + (b_1-b_2)\vb{i} + (c_1-c_2)\vb{k} + (d_1-d_2)\vb{k}.
+    \end{aligned}
+\end{equation}
+
+\subsection{Multiplicative properties}
+
+\subsubsection{Closure}
+
+As with addition, quaternions are considered closed upon multiplication, meaning:
+\begin{equation}
+    q_1, q_2 \in \mathbb{H} \implies q_1q_2 \in \mathbb{H}.
+\end{equation}
+Thus, the product of any two quaternions will necessarily be a quaternion. \cite{Illinois}
+
+\subsubsection{Commutativity and associativity} \label{ComAss}
+
+Although quaternion multiplication, like addition, is associative: \cite{Illinois}
+\begin{equation}
+    (q_1 \times q_2) \times q_3 = q_1 \times (q_2 \times q_3),
+\end{equation}
+it is crucially not commutative: \cite{Math431}
+\begin{equation}
+    q_1 \times q_2 \neq q_2 \times q_1.
+\end{equation}
+This may seem unintuitive at first, but it explains how multiple different rotations can be encoded within one quaternion even though the order of rotations matters (performing the same rotations in a different order produces a different result). \cite{Eater} This will be explored in much more depth later.
+
+Note that while the multiplication of two quaternions is not commutative, the multiplication of a quaternion and a real number is:
+\begin{equation}
+    nq_1q_2 = q_1nq_2 = q_1q_2n \neq q_2q_1n, \quad n \in \mathbb{R}.
+\end{equation}
+
+\subsubsection{Distributivity}
+
+As with both real and complex numbers, quaternion multiplication is considered to be distributive over addition. This means that:
+\begin{equation}
+    q_1(q_2 + q_3) = q_1q_2 + q_1q_3.
+\end{equation}
+
+\subsubsection{Calculating multiplication}
+
+The first step in working out the product of two quaternions is distributing each component:
+\begin{equation}
+    \begin{aligned}
+        & (a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k})(a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k}) \\
+        & = a_1a_2 + a_1b_2\vb{i} + a_1c_2\vb{j} + a_1d_2\vb{k} \\
+        & \phantom{=} + b_1a_2\vb{i} + b_1b_2\vb{i}^2 + b_1c_2\vb{i}\vb{j} + b_1d_2\vb{i}\vb{k} \\
+        & \phantom{=} + c_1a_2\vb{j} + c_1b_2\vb{j}\vb{i} + c_1c_2\vb{j}^2 + c_1d_2\vb{j}\vb{k} \\
+        & \phantom{=} + d_1a_2\vb{k} + d_1b_2\vb{k}\vb{i} + d_1c_2\vb{k}\vb{j} + d_1d_2\vb{k}^2.
+    \end{aligned}
+\end{equation}
+Do note that the order of the quaternion components ($\vb{i, j, k}$) must stay the same, while the order of the real components is not relevant, as discussed in Section \ref{ComAss}.
+
+The result of this distribution, however, is not the final product - it can be further simplified using the defining quaternion multiplication rules. The following rules \cite{Eater} in fact define quaternions as a number system, and were famously carved into a bridge by William Rowan Hamilton in 1843, after discovering that four dimensional numbers (quaternions) were in fact needed to describe 3D rotations: \cite{QuaternionWiki}
+\begin{subequations}
+    \begin{gather}
+        \vb{i}^2 = \vb{j}^2 = \vb{k}^2 = \vb{i}\vb{j}\vb{k} = -1, \\
+        \vb{ij} = -\vb{ji} = \vb{k}, \\
+        \vb{jk} = -\vb{kj} = \vb{i}, \\
+        \vb{ki} = -\vb{ik} = \vb{j}.
+    \end{gather}
+\end{subequations}
+
+\pagebreak
+\section{Calculating Rotations}
+
+\subsection{Forming an equation}
+
+To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \cite{DRose} needs to be carried out, where $q$ is the quaternion defining the rotation, $r$ is the vector being rotated (as a pure quaternion), and $\bar{q}$ is the conjugate quaternion of $q$. The result of this multiplication will yield a pure quaternion, like $r$, that describes the rotated vector.
+
+For this rotation to work, $q$ (and by definition also $\bar{q}$), needs to be a unit quaternion, so that the multiplication only rotates the vector quaternion $r$, and does not otherwise transform it.
+
+\subsubsection{Proof of the need for unit quaternions}
+
+Consider multiplying two quaternions and a vector quaternion, $q_1$, $r$, and $q_2$ (as needs to be done for rotations) such that
+\begin{equation}
+    r' = q_1rq_2.
+\end{equation}
+The only way to ensure that $\abs{r'} = \abs{r}$ (which is needed to ensure the magnitude of the rotated vector is the same as that of the original one, meaning pure rotation has occurred, without any enlargements or stretches) is if $\abs{q_1} = \abs{q_2} = 1$, as multiplying quaternions also multiplies their norms ($\abs{q_1q_2} = \abs{q_1}\abs{q_2}$). \cite{Math431}
+
+This can be proven as follows:
+\begin{equation}
+    \begin{aligned}
+        \text{let } & q_1 = a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k}, \\
+        & q_2 = a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k} \\
+    \end{aligned}
+\end{equation}
+\begin{alignat}{2}
+    \implies & q_1q_2 = (a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k})(a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k}) \\
+             & \phantom{q_1q_2} = a_1a_2 + a_1b_2\vb{i} + a_1c_2\vb{j} + a_1d_2\vb{k} \\
+             & \phantom{q_1q_2=} + b_1a_2\vb{i} - b_1b_2 + b_1c_2\vb{k} - b_1d_2\vb{j} \nonumber \\
+             & \phantom{q_1q_2=} + c_1a_2\vb{j} - c_1b_2\vb{k} - c_1c_2 + c_1d_2\vb{i} \nonumber \\
+             & \phantom{q_1q_2=} + d_1a_2\vb{k} + d_1b_2\vb{j} - d_1c_2\vb{i} - d_1d_2 \nonumber \\
+             & \phantom{q_1q_2} = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2) \\
+             & \phantom{q_1q_2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)\vb{i} \nonumber \\
+             & \phantom{q_1q_2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)\vb{j} \nonumber \\
+             & \phantom{q_1q_2=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)\vb{k} \nonumber \\[15pt]
+    \implies & \abs{q_1q_2}^2 = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2)^2 \\
+             & \phantom{\abs{q_1q_2}^2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)^2 \nonumber \\
+             & \phantom{\abs{q_1q_2}^2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)^2 \nonumber \\
+             & \phantom{\abs{q_1q_2}^2=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)^2 \nonumber \\
+             & \phantom{\abs{q_1q_2}^2} = {a_1}^2{a_2}^2 + {a_1}^2{b_2}^2 + {a_1}^2{c_2}^2 + {a_1}^2{d_2}^2 \label{eqnq1q2-1} \\
+             & \phantom{\abs{q_1q_2}^2=} + {b_1}^2{a_2}^2 + {b_1}^2{b_2}^2 + {b_1}^2{c_2}^2 + {b_1}^2{d_2}^2 \nonumber \\
+             & \phantom{\abs{q_1q_2}^2=} + {c_1}^2{a_2}^2 + {c_1}^2{b_2}^2 + {c_1}^2{c_2}^2 + {c_1}^2{d_2}^2 \nonumber \\
+             & \phantom{\abs{q_1q_2}^2=} + {d_1}^2{a_2}^2 + {d_1}^2{b_2}^2 + {d_1}^2{c_2}^2 + {d_1}^2{d_2}^2 \nonumber \\
+             & \phantom{\abs{q_1q_2}^2=} \text{after expansion and simplification.} \\[15pt]
+    & \abs{q_1}^2 = {a_1}^2 + {b_1}^2 + {c_1}^2 + {d_1}^2 \\
+    & \abs{q_2}^2 = {a_2}^2 + {b_2}^2 + {c_2}^2 + {d_2}^2 \nonumber \\[10pt]
+    \implies & (\abs{q_1}\abs{q_2})^2 = \abs{q_1}^2\abs{q_2}^2 \nonumber \\
+             & \phantom{(\abs{q_1}\abs{q_2})^2} = {a_1}^2{a_2}^2 + {a_1}^2{b_2}^2 + {a_1}^2{c_2}^2 + {a_1}^2{d_2}^2 \label{eqnq1q2-2} \\
+             & \phantom{(\abs{q_1}\abs{q_2})^2=} + {b_1}^2{a_2}^2 + {b_1}^2{b_2}^2 + {b_1}^2{c_2}^2 + {b_1}^2{d_2}^2 \nonumber \\
+             & \phantom{(\abs{q_1}\abs{q_2})^2=} + {c_1}^2{a_2}^2 + {c_1}^2{b_2}^2 + {c_1}^2{c_2}^2 + {c_1}^2{d_2}^2 \nonumber \\
+             & \phantom{(\abs{q_1}\abs{q_2})^2=} + {d_1}^2{a_2}^2 + {d_1}^2{b_2}^2 + {d_1}^2{c_2}^2 + {d_1}^2{d_2}^2 \nonumber
+\end{alignat}
+
+$\therefore \quad (\ref{eqnq1q2-1}) = (\ref{eqnq1q2-2}) \implies \abs{q_1q_2}^2 = (\abs{q_1}\abs{q_2})^2 \implies \abs{q_1q_2} = \abs{q_1}\abs{q_2}$.
+
+This shows that if unit quaternions were not used for $q$ and $\bar{q}$ in this multiplication, the norm (magnitude) of $r$ would change, which is not desired, as this represents an enlargement, but if unit quaternions were used (i.e. $\abs{q} = \abs{\bar{q}} = 1$) then $\abs{qr\bar{q}} = \abs{q}\abs{r}\abs{\bar{q}} = 1\times\abs{r}\times1 = \abs{r}$ as desired.
+
+This also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not have to be a unit quaternion), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
+
+\pagebreak
+
+\printbibliography
+
+\end{document}
