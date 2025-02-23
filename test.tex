@@ -181,7 +181,7 @@ Note that while the multiplication of two quaternions is not commutative, the mu
 
 \subsubsection{Distributivity}
 
-As with both real and complex numbers, quaternion multiplication is considered to be distributive over addition. This means that:
+As with both real and complex numbers, quaternion multiplication is considered to be distributive over addition. This means that multiplying a quaternion by the sum of two other quaternions is equal to taking the sum of multiplying the quaternion with each quaternion being added:
 \begin{equation}
     q_1(q_2 + q_3) = q_1q_2 + q_1q_3.
 \end{equation}
@@ -200,8 +200,16 @@ The first step in working out the product of two quaternions is distributing eac
 \end{equation}
 Do note that the order of the quaternion components ($\vb{i, j, k}$) must stay the same, while the order of the real components is not relevant, as discussed in Section \ref{ComAss}.
 
-The result of this distribution, however, is not the final product - it can be further simplified using the defining quaternion multiplication rules. The following rules \cite{Eater} in fact define quaternions as a number system, and were famously carved into a bridge by William Rowan Hamilton in 1843, after discovering that four dimensional numbers (quaternions) were in fact needed to describe 3D rotations: \cite{QuaternionWiki}
-\begin{subequations}
+The result of this distribution, however, is not the final product - it can be further simplified using the defining quaternion multiplication rules, which will be explored in the following subsection.
+
+\subsection{The $\vb{i, j, k}$ components}
+
+\subsubsection{The defining rules}
+
+While the following rules could simply be considered to be multiplicative rules, they almost single-handedly define quaternions as a number system, and so are much more than simply multiplicative rules.
+
+They were famously carved into a bridge by William Rowan Hamilton in 1843, after discovering that four, not three, dimensional numbers (quaternions) were in fact needed to describe 3D rotations: \cite{QuaternionWiki}
+\begin{subequations} \label{MultProperties1}
     \begin{gather}
         \vb{i}^2 = \vb{j}^2 = \vb{k}^2 = \vb{i}\vb{j}\vb{k} = -1, \\
         \vb{ij} = -\vb{ji} = \vb{k}, \\
@@ -209,6 +217,49 @@ The result of this distribution, however, is not the final product - it can be f
         \vb{ki} = -\vb{ik} = \vb{j}.
     \end{gather}
 \end{subequations}
+
+\subsubsection{Why four dimensions are needed}
+
+By considering why four-dimensional numbers are necessary to encode three-dimensional rotations, the reasons behind each of the above rules will become clear.
+
+It is trivial to consider why complex (two-dimensional) numbers cannot be used for three-dimensional rotations: they simply do not have the scope to even represent a three-dimensional point, let alone transform it. From this point, the natural solution seems to be the use of three-dimensional numbers.
+
+Consider a three-dimensional number, $t$, where:
+\begin{equation}
+    t = a + b\vb{i} + c\vb{j}, \quad a, b, c \in \mathbb{R}.
+\end{equation}
+It would be possible to represent three-dimensional points in a number like $t$ simply by assigning each of $a, b, c$ to the point's $x, y, z$ co-ordinates. For example, $\left(2, 3, 4\right)$ could be represented as $2 + 3\vb{i} + 4\vb{j}$.
+
+However, where this number system fails is where its multiplicative rules are defined. It is logical to state that $\vb{i}^2 = \vb{j}^2 = -1$, but the problem comes with defining $\vb{ij}$.
+
+Since $\pm\vb{i}$, $\pm\vb{j}$, and $\pm1$ all have a magnitude of 1 (a "distance" of 1 from the origin), the magnitude of $\vb{ij}$ must also be 1. This leaves three possibilities for the value of $\vb{ij}$: $\pm1, \pm\vb{i}, \pm\vb{j}$.
+
+Having established that:
+\begin{equation}
+    \vb{i}^2 = \vb{j}^2 = -1,
+\end{equation}
+exploring each case individually shows that none are valid:
+\begin{subequations}
+    \begin{alignat}{2}
+        \vb{ij} & = \pm\vb{i} && \implies \vb{j} = \pm1, \\
+        \vb{ij} & = \pm\vb{j} && \implies \vb{i} = \pm1, \\
+        \vb{ij} & = \pm\vb{1} && \implies \vb{i} = \mp\vb{j} \quad\text{or}\quad \vb{j} = \mp\vb{i}.
+    \end{alignat}
+\end{subequations}
+This is because 1, $\vb{i}$ and $\vb{j}$ must be orthogonal, and in each of the three cases one component ends up not being orthogonal to another. For example, if $\vb{i} = -\vb{j}$, it follows that $\vb{i}$ and $\vb{j}$ are scalar multiples, and as such no longer orthogonal.
+
+The only solution that can be found to this problem is equating the result of $\vb{ij}$ to a new component, $\vb{k}$, that is orthogonal to the real, $\vb{i}$, and $\vb{j}$ "axes". From this, we can derive the following rules:
+\begin{subequations} \label{MultProperties2}
+    \begin{gather}
+        \vb{i}^2 = \vb{j}^2 = \vb{k}^2 = \vb{i}\vb{j}\vb{k} = -1, \\
+        \vb{ij} = -\vb{ji} = \vb{k}, \\
+        \vb{jk} = -\vb{kj} = \vb{i}, \\
+        \vb{ki} = -\vb{ik} = \vb{j}.
+    \end{gather}
+\end{subequations}
+The product of any two components ($\vb{i, j, k}$) yields the other, and reversing the order flips the sign of the result (e.g. $\vb{ij} = \vb{k} \implies \vb{ji} = -\vb{k}$), as a result of the non-commutativity of quaternion multiplication (Section \ref{ComAss}).
+
+Note that these equations (\ref{MultProperties2}) are the same as those defined for quaternions (\ref{MultProperties1}) on page \pageref{MultProperties1}. We have now in effect derived quaternions by establishing that a three-dimensional number system cannot be defined.
 
 \pagebreak
 \section{Calculating Rotations}
@@ -266,7 +317,13 @@ $\therefore \quad (\ref{eqnq1q2-1}) = (\ref{eqnq1q2-2}) \implies \abs{q_1q_2}^2 
 
 This shows that if unit quaternions were not used for $q$ and $\bar{q}$ in this multiplication, the norm (magnitude) of $r$ would change, which is not desired, as this represents an enlargement, but if unit quaternions were used (i.e. $\abs{q} = \abs{\bar{q}} = 1$) then $\abs{qr\bar{q}} = \abs{q}\abs{r}\abs{\bar{q}} = 1\times\abs{r}\times1 = \abs{r}$ as desired.
 
-This also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not have to be a unit quaternion), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
+It also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not have to be a unit quaternion), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
+
+\subsection{A formula for the result}
+
+A formula for the result of the rotation can be derived as follows:
+
+
 
 \pagebreak
 
