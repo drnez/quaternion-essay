@@ -1,10 +1,10 @@
-% LTeX: language=en-GB
+% LTeX: language=en-GB enabled=false
 
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath, amssymb, amsthm, physics}
+\usepackage{amsmath, amssymb, amsthm, physics, listings}
 \usepackage[T1]{fontenc}
-\usepackage{microtype}
+\usepackage{microtype, xcolor}
 \usepackage{graphicx, float}
 
 \usepackage[backend=biber, style=numeric, language=british,sorting=none]{biblatex}
@@ -25,6 +25,32 @@
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{mystyle}{
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=10pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% LTeX: language=en-GB enabled=true
 
 \begin{document}
 
@@ -73,9 +99,9 @@ The norm, $\abs{q}$, of a quaternion, $q$, is defined as:
         \text{where } & q = a + b\vb{i} + c\vb{j} + d\vb{k}.
     \end{aligned} 
 \end{equation}
-This could be thought of as similar to the magnitude of a vector, giving the theoretical ``length'' of the quaternion. \cite{Math431}
+This could be thought of as similar to the magnitude of a vector, giving the theoretical "length" of the quaternion. \cite{Math431}
 
-This is referred to as the norm, as it is what each component of a quaternion needs to be divided by to normalise it (to get its corresponding unit quaternion - one with the same theoretical ``direction'').
+This is referred to as the norm, as it is what each component of a quaternion needs to be divided by to normalise it (to get its corresponding unit quaternion - one with the same theoretical "direction").
 
 For example, to normalise the quaternion
 \begin{equation}
@@ -206,7 +232,7 @@ The result of this distribution, however, is not the final product - it can be f
 
 \subsubsection{The defining rules}
 
-While the following rules could simply be considered to be multiplicative rules, they almost single-handedly define quaternions as a number system, and so are much more than simply multiplicative rules.
+While the following rules \cite{Eater} could simply be considered to be multiplicative rules, they almost single-handedly define quaternions as a number system, and so are much more than simply multiplicative rules.
 
 They were famously carved into a bridge by William Rowan Hamilton in 1843, after discovering that four, not three, dimensional numbers (quaternions) were in fact needed to describe 3D rotations: \cite{QuaternionWiki}
 \begin{subequations} \label{MultProperties1}
@@ -266,11 +292,13 @@ Note that these equations (\ref{MultProperties2}) are the same as those defined 
 
 \subsection{Forming an equation}
 
-To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \cite{DRose} needs to be carried out, where $q$ is the quaternion defining the rotation, $r$ is the vector being rotated (as a pure quaternion), and $\bar{q}$ is the conjugate quaternion of $q$. The result of this multiplication will yield a pure quaternion, like $r$, that describes the rotated vector.
+To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \cite{DRose} needs to be carried out, where $q$ is the unit quaternion defining the rotation, $r$ is the vector being rotated (as a pure quaternion), and $\bar{q}$ is the conjugate quaternion of $q$. This multiplication will yield a pure quaternion, like $r$, that describes the rotated vector.
 
-For this rotation to work, $q$ (and by definition also $\bar{q}$), needs to be a unit quaternion, so that the multiplication only rotates the vector quaternion $r$, and does not otherwise transform it.
+This may seem arbitrary at the moment, but it can be vaguely thought of as $q$ describing a rotation on $r$, while $\bar{q}$ exists as a "balancing force". The true mechanism behind how this works, and how $q$ can be determined to perform the desired rotation will be revealed later in this section.
 
 \subsubsection{Proof of the need for unit quaternions}
+
+For this rotation to work, $q$ (and by definition also $\bar{q}$), need to be unit quaternions, so that the multiplication only rotates the vector quaternion $r$, and does not otherwise transform it.
 
 Consider multiplying two quaternions and a vector quaternion, $q_1$, $r$, and $q_2$ (as needs to be done for rotations) such that
 \begin{equation}
@@ -282,7 +310,7 @@ This can be proven as follows:
 \begin{equation}
     \begin{aligned}
         \text{let } & q_1 = a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k}, \\
-        & q_2 = a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k} \\
+        & q_2 = a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k}. \\
     \end{aligned}
 \end{equation}
 \begin{alignat}{2}
@@ -294,7 +322,8 @@ This can be proven as follows:
              & \phantom{q_1q_2} = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2) \\
              & \phantom{q_1q_2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)\vb{i} \nonumber \\
              & \phantom{q_1q_2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)\vb{j} \nonumber \\
-             & \phantom{q_1q_2=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)\vb{k} \nonumber \\[15pt]
+             & \phantom{q_1q_2=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)\vb{k} \nonumber \\
+             & \phantom{q_1q_2=} \text{simplified using the rules in (\ref{MultProperties1})}. \nonumber \\[15pt]
     \implies & \abs{q_1q_2}^2 = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2)^2 \\
              & \phantom{\abs{q_1q_2}^2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)^2 \nonumber \\
              & \phantom{\abs{q_1q_2}^2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)^2 \nonumber \\
@@ -304,13 +333,13 @@ This can be proven as follows:
              & \phantom{\abs{q_1q_2}^2=} + {c_1}^2{a_2}^2 + {c_1}^2{b_2}^2 + {c_1}^2{c_2}^2 + {c_1}^2{d_2}^2 \nonumber \\
              & \phantom{\abs{q_1q_2}^2=} + {d_1}^2{a_2}^2 + {d_1}^2{b_2}^2 + {d_1}^2{c_2}^2 + {d_1}^2{d_2}^2 \nonumber \\
              & \phantom{\abs{q_1q_2}^2=} \text{after expansion and simplification.} \\[15pt]
-    & \abs{q_1}^2 = {a_1}^2 + {b_1}^2 + {c_1}^2 + {d_1}^2 \\
-    & \abs{q_2}^2 = {a_2}^2 + {b_2}^2 + {c_2}^2 + {d_2}^2 \nonumber \\[10pt]
+    & \abs{q_1}^2 = {a_1}^2 + {b_1}^2 + {c_1}^2 + {d_1}^2, \\
+    & \abs{q_2}^2 = {a_2}^2 + {b_2}^2 + {c_2}^2 + {d_2}^2. \nonumber \\[10pt]
     \implies & (\abs{q_1}\abs{q_2})^2 = \abs{q_1}^2\abs{q_2}^2 \nonumber \\
              & \phantom{(\abs{q_1}\abs{q_2})^2} = {a_1}^2{a_2}^2 + {a_1}^2{b_2}^2 + {a_1}^2{c_2}^2 + {a_1}^2{d_2}^2 \label{eqnq1q2-2} \\
              & \phantom{(\abs{q_1}\abs{q_2})^2=} + {b_1}^2{a_2}^2 + {b_1}^2{b_2}^2 + {b_1}^2{c_2}^2 + {b_1}^2{d_2}^2 \nonumber \\
              & \phantom{(\abs{q_1}\abs{q_2})^2=} + {c_1}^2{a_2}^2 + {c_1}^2{b_2}^2 + {c_1}^2{c_2}^2 + {c_1}^2{d_2}^2 \nonumber \\
-             & \phantom{(\abs{q_1}\abs{q_2})^2=} + {d_1}^2{a_2}^2 + {d_1}^2{b_2}^2 + {d_1}^2{c_2}^2 + {d_1}^2{d_2}^2 \nonumber
+             & \phantom{(\abs{q_1}\abs{q_2})^2=} + {d_1}^2{a_2}^2 + {d_1}^2{b_2}^2 + {d_1}^2{c_2}^2 + {d_1}^2{d_2}^2. \nonumber
 \end{alignat}
 
 $\therefore \quad (\ref{eqnq1q2-1}) = (\ref{eqnq1q2-2}) \implies \abs{q_1q_2}^2 = (\abs{q_1}\abs{q_2})^2 \implies \abs{q_1q_2} = \abs{q_1}\abs{q_2}$.
@@ -319,11 +348,13 @@ This shows that if unit quaternions were not used for $q$ and $\bar{q}$ in this 
 
 It also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not have to be a unit quaternion), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
 
+\subsection{Finding the values of $\vb{qr\bar{q}}$}
+
 \subsection{A formula for the result}
 
 A formula for the result of the rotation can be derived as follows:
 
-
+\lstinputlisting[language=bash]{qrotation.sh}
 
 \pagebreak
 
