@@ -62,8 +62,10 @@
 
 Quaternions are a 4-dimensional number system that extend the complex numbers, in a similar way that the complex numbers extend the real numbers. Denoted $\mathbb{H}$, they are of the form:
 \begin{equation}
-    a + b\vb{i} + c\vb{j} + d\vb{k}, \quad a, b, c, d \in \mathbb{R}.
+    a + b\vb{i} + c\vb{j} + d\vb{k}, \quad a, b, c, d \in \mathbb{R}, \quad \vb{i}^2=\vb{j}^2=\vb{k}^2=-1.
 \end{equation}
+The first term is referred to as the real part of the quaternion, while the other three components are imaginary. Each of these components (which can be thought of as axes in a 4-dimensional space) are orthogonal (perpendicular), and as such no real transformation on any component can map it onto another.
+
 In the modern day, they are used extensively in representing the rotations of 3-dimensional objects in computer systems, due to the relative computational ease of calculating such rotations, which only involves the multiplication of real numbers, and is not susceptible to problems like gimbal lock, unlike Euler angles, which are perhaps easier to visualise and more widely used outside computational settings. \cite{QuaternionWiki}
 
 \subsection{The structure of this essay}
@@ -76,9 +78,9 @@ Having covered these areas, the mechanism in which they can be used for rotation
 
 \subsubsection{Pure quaternions} \label{PureDef}
 
-A pure quaternion is a quaternion where there is no real component, meaning for a quaternion $a + b\vb{i} + c\vb{j} + d\vb{k}$, $a = 0$. \cite{Math431}
+A pure quaternion is a quaternion that has no real component, meaning for a quaternion $a + b\vb{i} + c\vb{j} + d\vb{k}$, $a = 0$. \cite{Math431}
 
-They are also known as vector quaternions, as pure quaternions can be used to represent vectors in quaternion form, where $\vb{i, j, k}$ represent the $x, y, z$ components of a vector.
+They are also known as vector quaternions, as pure quaternions can be used to represent vectors in quaternion form, where the $\vb{i, j}$, and $\vb{k}$ components of the quaternion represent the $x, y$, and $z$ components of a vector respectively.
 
 For example, the vector $(2,3,1)$ can be represented as the quaternion $2\vb{i} + 3\vb{j} + \vb{k}$.
 
@@ -410,21 +412,23 @@ Since $r_1$ is simply the position vector of the original point in the form of a
 
 \subsubsection{2D rotation with complex numbers}
 
-It will help to first go through performing 2-dimensional rotations through complex number multiplication, as quaternion rotation can be thought of as just a "scaled-up" version of this.
+It will help to first go through performing 2-dimensional rotations \cite{ComplexRotation} through complex number multiplication, as quaternion rotation can be thought of as just a "scaled-up" version of this.
 
 Imagine a point $(x_1, y_1)$, that is to be rotated by the angle $\theta$ in a 2-dimensional plane. Since we are just rotating this point, without scaling, we know that the distance of the the rotated point, $(x_2, y_2)$, from the origin will be the same as that of the original point. As such, we can consider both points on a circumference of a circle with radius $r$, where $r$ is the distance of the points from the origin: $r = \sqrt{{x_1}^2 + {x_2}^2}$.
 
 The "aim" of this rotation is, given $x_1, y_1$, and $\theta$, to be able to calculate $x_2$ and $y_2$.
 
-We can start by defining the original and final points in complex number form, as $x_1 + y_1\vb{i}$ and $x_2 + y_2\vb{i}$ respectively.
+We can start by defining the original and final points in complex number form, as $x_1 + y_1\vb{i}$ and $x_2 + y_2\vb{i}$ respectively. We can also consider two position vectors, $u$ and $v$, from the origin to each of these points respectively. Note that the $x$ and $y$ components of these vectors are the real and imaginary components of the complex numbers that represent them respectively. The final component to consider is the perpendicular line through $u$ that intersects the point $x_2 + y_2\vb{i}$. This is all illustrated in Figure \ref{ComplexRotationFig}.
 
-\cite{ComplexRotation}
-
-\begin{figure}[H]
+\begin{figure}[H] \label{ComplexRotationFig}
     \centering
     \asyinclude[inline]{images/fig1-2.txt}
     \caption{Two position vectors with radius, $r$, depicted as two radii of a circle}
 \end{figure}
+
+The position vector (and thereby the co-ordinates) of the rotated point, $x_2 + y_2\vb{i}$, can therefore be found by adding the component of $u$ up to the point it intersects the perpendicular line through it - this vector will be referred to as $a$ - to the vector, $b$, from this point to $r$. Therefore, $x_2 + y_2\vb{i} = a + b$.
+
+$a$ can be 
 
 \subsection{A formula for the result}
 
