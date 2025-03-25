@@ -1,6 +1,6 @@
 % LTeX: language=en-GB enabled=false
 
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amssymb, amsthm, physics, listings}
 \usepackage[T1]{fontenc}
@@ -354,7 +354,7 @@ To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \
 
 This may seem arbitrary at the moment, but it can be vaguely thought of as $q$ describing a rotation on $r$, while $\bar{q}$ exists as a "balancing force". The true mechanism behind how this works, and how $q$ can be determined to perform the desired rotation will be revealed later in this section.
 
-\subsubsection{The need for unit quaternions}
+\subsubsection{The need for unit quaternions} \label{NormMultProof}
 
 For this rotation to work, $q$ (and by definition also $\bar{q}$), need to be unit quaternions, so that the multiplication only rotates the vector quaternion $r$, and does not otherwise transform it.
 
@@ -412,27 +412,79 @@ Since $r_1$ is simply the position vector of the original point in the form of a
 
 \subsubsection{2D rotation with complex numbers}
 
-It will help to first go through performing 2-dimensional rotations \cite{ComplexRotation} through complex number multiplication, as quaternion rotation can be thought of as just a "scaled-up" version of this.
+It will help to first consider performing 2-dimensional rotations \cite{ComplexRotation} through complex number multiplication, as quaternion rotation can be thought of as just a "scaled-up" version of this.
 
-Imagine a point $(x_1, y_1)$, that is to be rotated by the angle $\theta$ in a 2-dimensional plane. Since we are just rotating this point, without scaling, we know that the distance of the the rotated point, $(x_2, y_2)$, from the origin will be the same as that of the original point. As such, we can consider both points on a circumference of a circle with radius $r$, where $r$ is the distance of the points from the origin: $r = \sqrt{{x_1}^2 + {x_2}^2}$.
+Imagine a point $(x_1, y_1)$, that is to be rotated by the angle $\theta$ in a 2-dimensional plane. Since we are just rotating this point, without scaling, we know that the distance of the the rotated point, $(x_2, y_2)$, from the origin will be the same as that of the original point. As such, we can consider both points on a circumference of a circle with radius $r$, where $r$ is the distance of the points from the origin:
+\begin{equation}
+    r = \sqrt{{x_1}^2 + {y_1}^2} = \sqrt{{x_2}^2 + {y_2}^2}.
+\end{equation}
 
 The "aim" of this rotation is, given $x_1, y_1$, and $\theta$, to be able to calculate $x_2$ and $y_2$.
 
-We can start by defining the original and final points in complex number form, as $x_1 + y_1\vb{i}$ and $x_2 + y_2\vb{i}$ respectively. We can also consider two position vectors, $u$ and $v$, from the origin to each of these points respectively. Note that the $x$ and $y$ components of these vectors are the real and imaginary components of the complex numbers that represent them respectively. The final component to consider is the perpendicular line through $u$ that intersects the point $x_2 + y_2\vb{i}$. This is all illustrated in Figure \ref{ComplexRotationFig}.
+We can start by defining the original and final points in complex number form, as $(x_1 + y_1\vb{i})$ and $(x_2 + y_2\vb{i})$ respectively. We can also consider two position vectors, $u$ and $v$, from the origin to each of these points. Note that the $x$ and $y$ components of these vectors are the real and imaginary components of the complex numbers that represent them respectively. The final component to consider is the perpendicular line through $u$ that intersects the point $(x_2 + y_2\vb{i})$. This is all illustrated in Figure \ref{ComplexRotationFig}.
 
-\begin{figure}[H] \label{ComplexRotationFig}
+\begin{figure}[H]
     \centering
     \asyinclude[inline]{images/fig1-2.txt}
-    \caption{Two position vectors with radius, $r$, depicted as two radii of a circle}
+    \caption{A visual representation of 2-dimensional rotation using complex numbers.}
+    \label{ComplexRotationFig}
 \end{figure}
 
-The position vector (and thereby the co-ordinates) of the rotated point, $x_2 + y_2\vb{i}$, can therefore be found by adding the component of $u$ up to the point it intersects the perpendicular line through it - this vector will be referred to as $a$ - to the vector, $b$, from this point to $r$. Therefore, $x_2 + y_2\vb{i} = a + b$.
+The position vector (and thereby the co-ordinates) of the rotated point, $(x_2 + y_2\vb{i})$, can therefore be found by adding the component of $u$ up to the point it intersects the perpendicular line through it - this vector will be referred to as $a$ - to the vector, $b$, from this point to the point $(x_2 + y_2\vb{i})$. Therefore, $(x_2 + y_2\vb{i}) = a + b$.
 
-$a$ can be 
+Defining $\theta$ as the angle between the vectors $v$ and $u$:
+\begin{equation}
+    \begin{aligned}
+        \cos\theta = \frac{\abs{a}}{r} &\implies \abs{a} = r\cos\theta = \abs{u}\cos\theta \\
+        &\implies a = u\cos\theta.
+    \end{aligned}
+\end{equation}
+To explain the above, $\cos\theta$ represents the ratio between the magnitude of $a$, and $r$, which is also the magnitude of $u$. Therefore, since $a$ and $u$ are parallel vectors (they are in the same direction), and $\cos\theta$ represents the ratio between them, $a = u\cos\theta$.
 
-\subsection{A formula for the result}
+A very similar process can be followed to find $b$, using $\sin\theta$ instead of $\cos\theta$ as $b$ is opposite rather than adjacent to $\theta$, however, while $\abs{b} = \abs{u}\sin\theta$:
+\begin{equation}
+    \begin{aligned}
+        \sin\theta = \frac{\abs{b}}{r} &\implies \abs{b} = r\sin\theta = \abs{u}\sin\theta,
+    \end{aligned}
+\end{equation}
+it does not follow here that $b = u\sin\theta$, as $b$ is not parallel to $u$, but perpendicular by definition. Therefore, first we need to rotate $u$ by $\frac{\pi}{2}$ radians to get it parallel with $b$. This can be done through multiplication with $\vb{i}$, as $\vb{i}$ is the perpendicular axis to the real numbers. In effect, this multiplication "swaps" the order of the $x$ and $y$ components, by moving the real numbers into the imaginary axis, and the imaginary components into the real axis. In effect:
+\begin{equation}
+    \vb{i}^2 = -1 \implies (x + y\vb{i}) \times \vb{i} = (-y + x\vb{i}).
+\end{equation}
+By multiplying $u$ by $\vb{i}$ to make it parallel to $b$, it can then be multiplied by $\sin\theta$ to also make its magnitude equal to that of $b$ (as shown above), so:
+\begin{equation}
+    b = u\sin\theta\vb{i}.
+\end{equation}
+Therefore, as $u = x_1 + y_1\vb{i}$:
+\begin{equation}
+    \begin{aligned}
+        v =\phantom{ } & x_2 + y_2\vb{i} \\
+        =\phantom{ }& a + b \\
+        =\phantom{ }& u\cos\theta + u\sin\theta\vb{i} \\
+        =\phantom{ }& (x_1 + y_1\vb{i})(\cos\theta + \sin\theta\vb{i}).
+    \end{aligned}
+\end{equation}
 
-A formula for the result of the rotation can be derived as follows:
+This shows that a multiplication by $(\cos\theta + \sin\theta\vb{i})$ rotates a point in 2-dimensional space by $\theta$. It is clear that this is a pure rotation (i.e. the distance of the points from the origin remains unchanged), both by the diagram in Figure \ref{ComplexRotationFig}, and by the identity $\cos^2\theta + \sin^2\theta \equiv 1$:
+\begin{equation}
+    \begin{aligned}
+        \text{let } c &= \cos\theta + \sin\theta\vb{i} \\
+        \implies \abs{c} &= \sqrt{\cos^2\theta + \sin^2\theta} = 1.
+    \end{aligned}
+\end{equation}
+Therefore, performing this multiplication cannot change the magnitude of the point, as the magnitude of the complex number performing the rotation is 1. Note that the magnitude of a complex number is defined similarly to that of a quaternion, and multiplying two complex numbers also multiplies their magnitudes, just like with quaternions (Section \ref{NormMultProof}).
+
+\subsubsection{3D rotation with quaternions}
+
+Using quaternions to rotate 3-dimensional points is not so different to the process considered above, where complex numbers are used to rotate 2-dimensional points, and most of the principles considered there are also relevant here.
+
+\subsection{The purpose of $\bar{q}$}
+
+Visualise the rotation... double transformative effects...
+
+\subsection{Desirable properties?}
+
+combinding rotations => why multiplication is not commutative
 
 \pagebreak
 
