@@ -1,11 +1,12 @@
 % LTeX: language=en-GB enabled=false
 
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amssymb, amsthm, physics, listings}
 \usepackage[T1]{fontenc}
-\usepackage{microtype, xcolor}
-\usepackage{graphicx, float}
+\usepackage{microtype}
+\usepackage{graphicx, float, xcolor}
+\usepackage[inline]{asymptote}
 
 \usepackage[backend=biber, style=numeric, language=british,sorting=none]{biblatex}
 \addbibresource{references.bib}
@@ -17,14 +18,9 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.8em}
 
-\allowdisplaybreaks
-
 \title{The use of quaternions in the computation of 3D rotations}
 \author{Shayan Nezami}
 \date{\today}
-
-\theoremstyle{definition}
-\newtheorem{definition}{Definition}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -68,7 +64,7 @@ Quaternions are a 4-dimensional number system that extend the complex numbers, i
 \begin{equation}
     a + b\vb{i} + c\vb{j} + d\vb{k}, \quad a, b, c, d \in \mathbb{R}.
 \end{equation}
-In the modern day, they are used extensively in representing the rotations of 3-dimensional objects in computer systems, due to the relative computational ease of calculating such rotations, which only involves the multiplication of real numbers, and is not susceptible to problems like gimbal lock, unlike Euler angles, which are perhaps easier to visualise, and more widely used outside computational settings. \cite{QuaternionWiki}
+In the modern day, they are used extensively in representing the rotations of 3-dimensional objects in computer systems, due to the relative computational ease of calculating such rotations, which only involves the multiplication of real numbers, and is not susceptible to problems like gimbal lock, unlike Euler angles, which are perhaps easier to visualise and more widely used outside computational settings. \cite{QuaternionWiki}
 
 \subsection{The structure of this essay}
 
@@ -78,7 +74,7 @@ Having covered these areas, the mechanism in which they can be used for rotation
 
 \subsection{Definitions}
 
-\subsubsection{Pure quaternions}
+\subsubsection{Pure quaternions} \label{PureDef}
 
 A pure quaternion is a quaternion where there is no real component, meaning for a quaternion $a + b\vb{i} + c\vb{j} + d\vb{k}$, $a = 0$. \cite{Math431}
 
@@ -212,7 +208,7 @@ As with both real and complex numbers, quaternion multiplication is considered t
     q_1(q_2 + q_3) = q_1q_2 + q_1q_3.
 \end{equation}
 
-\subsubsection{Calculating multiplication}
+\subsubsection{Calculating multiplication} \label{InitialMult}
 
 The first step in working out the product of two quaternions is distributing each component:
 \begin{equation}
@@ -224,7 +220,7 @@ The first step in working out the product of two quaternions is distributing eac
         & \phantom{=} + d_1a_2\vb{k} + d_1b_2\vb{k}\vb{i} + d_1c_2\vb{k}\vb{j} + d_1d_2\vb{k}^2.
     \end{aligned}
 \end{equation}
-Do note that the order of the quaternion components ($\vb{i, j, k}$) must stay the same, while the order of the real components is not relevant, as discussed in Section \ref{ComAss}.
+Do note that the order of the quaternion's imaginary components ($\vb{i, j, k}$) must stay the same, while the order of the real components is not relevant, as discussed in Section \ref{ComAss}.
 
 The result of this distribution, however, is not the final product - it can be further simplified using the defining quaternion multiplication rules, which will be explored in the following subsection.
 
@@ -232,9 +228,9 @@ The result of this distribution, however, is not the final product - it can be f
 
 \subsubsection{The defining rules}
 
-While the following rules \cite{Eater} could simply be considered to be multiplicative rules, they almost single-handedly define quaternions as a number system, and so are much more than simply multiplicative rules.
+While the following rules \cite{Eater} could simply be considered to be multiplicative rules, they almost single-handedly define quaternions as a number system, and so deserve their own section.
 
-They were famously carved into a bridge by William Rowan Hamilton in 1843, after discovering that four, not three, dimensional numbers (quaternions) were in fact needed to describe 3D rotations: \cite{QuaternionWiki}
+They were famously carved into a bridge by William Rowan Hamilton in 1843 \cite{QuaternionWiki}, after discovering that four, not three, dimensional numbers (quaternions) were in fact needed to describe 3D rotations:
 \begin{subequations} \label{MultProperties1}
     \begin{gather}
         \vb{i}^2 = \vb{j}^2 = \vb{k}^2 = \vb{i}\vb{j}\vb{k} = -1, \\
@@ -246,7 +242,7 @@ They were famously carved into a bridge by William Rowan Hamilton in 1843, after
 
 \subsubsection{Why four dimensions are needed}
 
-By considering why four-dimensional numbers are necessary to encode three-dimensional rotations, the reasons behind each of the above rules will become clear.
+These rules could be explained by simply stating they are how they are by definition of the quaternion number system, but by considering why four-, rather than three-, dimensional numbers are needed, the reasons behind each of the above rules will become clear.
 
 It is trivial to consider why complex (two-dimensional) numbers cannot be used for three-dimensional rotations: they simply do not have the scope to even represent a three-dimensional point, let alone transform it. From this point, the natural solution seems to be the use of three-dimensional numbers.
 
@@ -258,7 +254,7 @@ It would be possible to represent three-dimensional points in a number like $t$ 
 
 However, where this number system fails is where its multiplicative rules are defined. It is logical to state that $\vb{i}^2 = \vb{j}^2 = -1$, but the problem comes with defining $\vb{ij}$.
 
-Since $\pm\vb{i}$, $\pm\vb{j}$, and $\pm1$ all have a magnitude of 1 (a "distance" of 1 from the origin), the magnitude of $\vb{ij}$ must also be 1. This leaves three possibilities for the value of $\vb{ij}$: $\pm1, \pm\vb{i}, \pm\vb{j}$.
+Since $\pm\vb{i}$, $\pm\vb{j}$, and $\pm1$ all have a magnitude of 1 (a "distance" of 1 from the origin when thinking of this graphically), the magnitude of $\vb{ij}$ must also be 1. This leaves three possibilities for the value of $\vb{ij}$: $\pm1, \pm\vb{i}, \pm\vb{j}$.
 
 Having established that:
 \begin{equation}
@@ -272,9 +268,48 @@ exploring each case individually shows that none are valid:
         \vb{ij} & = \pm\vb{1} && \implies \vb{i} = \mp\vb{j} \quad\text{or}\quad \vb{j} = \mp\vb{i}.
     \end{alignat}
 \end{subequations}
-This is because 1, $\vb{i}$ and $\vb{j}$ must be orthogonal, and in each of the three cases one component ends up not being orthogonal to another. For example, if $\vb{i} = -\vb{j}$, it follows that $\vb{i}$ and $\vb{j}$ are scalar multiples, and as such no longer orthogonal.
+This is because the real, $\vb{i}$ and $\vb{j}$ components must be orthogonal, and in each of the three cases above one component ends up not being orthogonal to another. For example, if $\vb{i} = -\vb{j}$, it follows that $\vb{i}$ and $\vb{j}$ are scalar multiples, and as such no longer orthogonal.
 
-The only solution that can be found to this problem is equating the result of $\vb{ij}$ to a new component, $\vb{k}$, that is orthogonal to the real, $\vb{i}$, and $\vb{j}$ "axes". From this, we can derive the following rules:
+The only solution that can be found to this problem is equating the result of $\vb{ij}$ to a new component that is orthogonal to the real, $\vb{i}$, and $\vb{j}$ "axes". In other words, for the $\vb{i}$ and $\vb{j}$ components to remain orthogonal, a new component is needed. We can call this new component $\vb{k}$, and define it as follows:
+\begin{equation}
+    \vb{k}^2 = -1, \quad \vb{ij} = \vb{k}.
+\end{equation}
+
+We now also need to define the multiplicative rules of $\vb{k}$ with $\vb{i}$ and $\vb{j}$. This is now fairly straightforward: we know that any component multiplied by another must form a seperate component, and that the product of a component must be unique with any other component. Considering what we know about $\vb{i}$:
+\begin{subequations}
+    \begin{alignat}{2}
+        & \vb{i} \times 1 && = \vb{i}, \\
+        & \vb{i} \times \vb{i} && = -1, \\
+        & \vb{i} \times \vb{j} && = \vb{k}.
+    \end{alignat}
+\end{subequations}
+We can derive the equation for the multiplication of $\vb{k}$ and $\vb{i}$:
+\begin{equation}
+    \vb{k} \times \vb{i} = \vb{j}.
+\end{equation}
+This is because $\vb{i}$ multiplies with $1, \vb{i}$, and $\vb{j}$ to make $\vb{i}, -1$, and $\vb{k}$ respectively, so the only remaining component that $\vb{k}$ can multiply with $\vb{i}$ to make is $\vb{j}$. Do note that the order of multiplication here is reversed, and this order is significant (in fact $\vb{ik} = -\vb{j}$) due to the non-commutativity of quaternion multiplication (Section \ref{ComAss}), which is needed to enable them to encode rotations - the exact mechanisms of this will be explained later.
+
+Repeating this process with $\vb{j}$ yields the following:
+\begin{subequations}
+    \begin{alignat}{2}
+        & \vb{j} \times 1 && = \vb{j}, \\
+        & \vb{j} \times \vb{j} && = -1, \\
+        & \vb{j} \times \vb{i} && = -\vb{k}, \\
+        & \vb{j} \times \vb{k} && = \vb{i}.
+    \end{alignat}
+\end{subequations}
+
+And so we have now defined all the multiplications of $\vb{k}$, while preserving orthogonality:
+\begin{subequations}
+    \begin{alignat}{2}
+        & \vb{k} \times 1 && = \vb{k}, \\
+        & \vb{k} \times \vb{k} && = -1, \\
+        & \vb{k} \times \vb{i} && = \vb{j}, \\
+        & \vb{k} \times \vb{j} && = -\vb{i}.
+    \end{alignat}
+\end{subequations}
+
+Putting these all together, we get:
 \begin{subequations} \label{MultProperties2}
     \begin{gather}
         \vb{i}^2 = \vb{j}^2 = \vb{k}^2 = \vb{i}\vb{j}\vb{k} = -1, \\
@@ -283,9 +318,30 @@ The only solution that can be found to this problem is equating the result of $\
         \vb{ki} = -\vb{ik} = \vb{j}.
     \end{gather}
 \end{subequations}
-The product of any two components ($\vb{i, j, k}$) yields the other, and reversing the order flips the sign of the result (e.g. $\vb{ij} = \vb{k} \implies \vb{ji} = -\vb{k}$), as a result of the non-commutativity of quaternion multiplication (Section \ref{ComAss}).
+The product of any two seperate components ($\vb{i, j, k}$) yields the other, and reversing the order flips the sign of the result (e.g. $\vb{ij} = \vb{k} \implies \vb{ji} = -\vb{k}$).
 
-Note that these equations (\ref{MultProperties2}) are the same as those defined for quaternions (\ref{MultProperties1}) on page \pageref{MultProperties1}. We have now in effect derived quaternions by establishing that a three-dimensional number system cannot be defined.
+Note that these equations (\ref{MultProperties2}) are the same as those defined for quaternions (\ref{MultProperties1}) on page \pageref{MultProperties1}. We have now in effect derived the quaternion number system by establishing that a three-dimensional number system cannot be defined.
+
+\subsubsection{Simplifying the multiplication} \label{QuatMultFull}
+
+In Section \ref{InitialMult} (page \pageref{InitialMult}), the distributivity of quaternion multiplication was demonstrated through calculating the product of two sample quaternions, but with the multiplicative rules that we have defined (\ref{MultProperties1}), we can now simplify this futher:
+\begin{equation}
+    \begin{aligned}
+        & (a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k})(a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k}) \\
+        & = a_1a_2 + a_1b_2\vb{i} + a_1c_2\vb{j} + a_1d_2\vb{k} \\
+        & \phantom{=} + b_1a_2\vb{i} + b_1b_2\vb{i}^2 + b_1c_2\vb{i}\vb{j} + b_1d_2\vb{i}\vb{k} \\
+        & \phantom{=} + c_1a_2\vb{j} + c_1b_2\vb{j}\vb{i} + c_1c_2\vb{j}^2 + c_1d_2\vb{j}\vb{k} \\
+        & \phantom{=} + d_1a_2\vb{k} + d_1b_2\vb{k}\vb{i} + d_1c_2\vb{k}\vb{j} + d_1d_2\vb{k}^2 \\
+        & = a_1a_2 + a_1b_2\vb{i} + a_1c_2\vb{j} + a_1d_2\vb{k} \\
+        & \phantom{=} + b_1a_2\vb{i} - b_1b_2 + b_1c_2\vb{k} - b_1d_2\vb{j} \\
+        & \phantom{=} + c_1a_2\vb{j} - c_1b_2\vb{k} - c_1c_2 + c_1d_2\vb{i} \\
+        & \phantom{=} + d_1a_2\vb{k} + d_1b_2\vb{j} - d_1c_2\vb{i} - d_1d_2  \\
+        & = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2) \\
+        & \phantom{=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)\vb{i} \\
+        & \phantom{=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)\vb{j} \\
+        & \phantom{=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)\vb{k}.
+    \end{aligned}
+\end{equation}
 
 \pagebreak
 \section{Calculating Rotations}
@@ -296,7 +352,7 @@ To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \
 
 This may seem arbitrary at the moment, but it can be vaguely thought of as $q$ describing a rotation on $r$, while $\bar{q}$ exists as a "balancing force". The true mechanism behind how this works, and how $q$ can be determined to perform the desired rotation will be revealed later in this section.
 
-\subsubsection{Proof of the need for unit quaternions}
+\subsubsection{The need for unit quaternions}
 
 For this rotation to work, $q$ (and by definition also $\bar{q}$), need to be unit quaternions, so that the multiplication only rotates the vector quaternion $r$, and does not otherwise transform it.
 
@@ -304,9 +360,11 @@ Consider multiplying two quaternions and a vector quaternion, $q_1$, $r$, and $q
 \begin{equation}
     r' = q_1rq_2.
 \end{equation}
-The only way to ensure that $\abs{r'} = \abs{r}$ (which is needed to ensure the magnitude of the rotated vector is the same as that of the original one, meaning pure rotation has occurred, without any enlargements or stretches) is if $\abs{q_1} = \abs{q_2} = 1$, as multiplying quaternions also multiplies their norms ($\abs{q_1q_2} = \abs{q_1}\abs{q_2}$). \cite{Math431}
+The only way to ensure that $\abs{r'} = \abs{r}$ (which is needed to ensure the magnitude of the rotated vector is the same as that of the original one, meaning pure rotation has occurred, without any enlargements or stretches) is if $\abs{q_1} = \abs{q_2} = 1$, as multiplying quaternions also multiplies their norms: $\abs{q_1q_2} = \abs{q_1}\abs{q_2}$. \cite{Math431}
 
 This can be proven as follows:
+\begingroup
+\allowdisplaybreaks
 \begin{equation}
     \begin{aligned}
         \text{let } & q_1 = a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k}, \\
@@ -314,16 +372,11 @@ This can be proven as follows:
     \end{aligned}
 \end{equation}
 \begin{alignat}{2}
-    \implies & q_1q_2 = (a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k})(a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k}) \\
-             & \phantom{q_1q_2} = a_1a_2 + a_1b_2\vb{i} + a_1c_2\vb{j} + a_1d_2\vb{k} \\
-             & \phantom{q_1q_2=} + b_1a_2\vb{i} - b_1b_2 + b_1c_2\vb{k} - b_1d_2\vb{j} \nonumber \\
-             & \phantom{q_1q_2=} + c_1a_2\vb{j} - c_1b_2\vb{k} - c_1c_2 + c_1d_2\vb{i} \nonumber \\
-             & \phantom{q_1q_2=} + d_1a_2\vb{k} + d_1b_2\vb{j} - d_1c_2\vb{i} - d_1d_2 \nonumber \\
-             & \phantom{q_1q_2} = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2) \\
+    \implies & q_1q_2 = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2) \\
              & \phantom{q_1q_2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)\vb{i} \nonumber \\
              & \phantom{q_1q_2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)\vb{j} \nonumber \\
              & \phantom{q_1q_2=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)\vb{k} \nonumber \\
-             & \phantom{q_1q_2=} \text{simplified using the rules in (\ref{MultProperties1})}. \nonumber \\[15pt]
+             & \phantom{q_1q_2=} \text{as defined in Section \ref{QuatMultFull}}. \nonumber \\[15pt]
     \implies & \abs{q_1q_2}^2 = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2)^2 \\
              & \phantom{\abs{q_1q_2}^2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)^2 \nonumber \\
              & \phantom{\abs{q_1q_2}^2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)^2 \nonumber \\
@@ -335,26 +388,47 @@ This can be proven as follows:
              & \phantom{\abs{q_1q_2}^2=} \text{after expansion and simplification.} \\[15pt]
     & \abs{q_1}^2 = {a_1}^2 + {b_1}^2 + {c_1}^2 + {d_1}^2, \\
     & \abs{q_2}^2 = {a_2}^2 + {b_2}^2 + {c_2}^2 + {d_2}^2. \nonumber \\[10pt]
-    \implies & (\abs{q_1}\abs{q_2})^2 = \abs{q_1}^2\abs{q_2}^2 \nonumber \\
+    \therefore \quad & (\abs{q_1}\abs{q_2})^2 = \abs{q_1}^2\abs{q_2}^2 \nonumber \\
              & \phantom{(\abs{q_1}\abs{q_2})^2} = {a_1}^2{a_2}^2 + {a_1}^2{b_2}^2 + {a_1}^2{c_2}^2 + {a_1}^2{d_2}^2 \label{eqnq1q2-2} \\
              & \phantom{(\abs{q_1}\abs{q_2})^2=} + {b_1}^2{a_2}^2 + {b_1}^2{b_2}^2 + {b_1}^2{c_2}^2 + {b_1}^2{d_2}^2 \nonumber \\
              & \phantom{(\abs{q_1}\abs{q_2})^2=} + {c_1}^2{a_2}^2 + {c_1}^2{b_2}^2 + {c_1}^2{c_2}^2 + {c_1}^2{d_2}^2 \nonumber \\
              & \phantom{(\abs{q_1}\abs{q_2})^2=} + {d_1}^2{a_2}^2 + {d_1}^2{b_2}^2 + {d_1}^2{c_2}^2 + {d_1}^2{d_2}^2. \nonumber
 \end{alignat}
+\endgroup
 
-$\therefore \quad (\ref{eqnq1q2-1}) = (\ref{eqnq1q2-2}) \implies \abs{q_1q_2}^2 = (\abs{q_1}\abs{q_2})^2 \implies \abs{q_1q_2} = \abs{q_1}\abs{q_2}$.
+$\quad (\ref{eqnq1q2-1}) = (\ref{eqnq1q2-2}) \implies \abs{q_1q_2}^2 = (\abs{q_1}\abs{q_2})^2 \implies \abs{q_1q_2} = \abs{q_1}\abs{q_2}$.
 
 This shows that if unit quaternions were not used for $q$ and $\bar{q}$ in this multiplication, the norm (magnitude) of $r$ would change, which is not desired, as this represents an enlargement, but if unit quaternions were used (i.e. $\abs{q} = \abs{\bar{q}} = 1$) then $\abs{qr\bar{q}} = \abs{q}\abs{r}\abs{\bar{q}} = 1\times\abs{r}\times1 = \abs{r}$ as desired.
 
 It also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not have to be a unit quaternion), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
 
-\subsection{Finding the values of $\vb{qr\bar{q}}$}
+\subsection{Finding the quaternion of rotation}
+
+This section will explain how the values of the components in the formula $r_2 = qr_1\bar{q}$, where $r_2$ describes the co-ordinates of the point following rotation, can be found.
+
+Since $r_1$ is simply the position vector of the original point in the form of a pure quaternion (Section \ref{PureDef}), and $\bar{q}$ is the conjugate quaternion of $q$, all that is left is to define $q$.
+
+\subsubsection{2D rotation with complex numbers}
+
+It will help to first go through performing 2-dimensional rotations through complex number multiplication, as quaternion rotation can be thought of as just a "scaled-up" version of this.
+
+Imagine a point $(x_1, y_1)$, that is to be rotated by the angle $\theta$ in a 2-dimensional plane. Since we are just rotating this point, without scaling, we know that the distance of the the rotated point, $(x_2, y_2)$, from the origin will be the same as that of the original point. As such, we can consider both points on a circumference of a circle with radius $r$, where $r$ is the distance of the points from the origin: $r = \sqrt{{x_1}^2 + {x_2}^2}$.
+
+The "aim" of this rotation is, given $x_1, y_1$, and $\theta$, to be able to calculate $x_2$ and $y_2$.
+
+We can start by defining the original and final points in complex number form, as $x_1 + y_1\vb{i}$ and $x_2 + y_2\vb{i}$ respectively.
+
+\cite{ComplexRotation}
+
+\begin{figure}[H]
+    \centering
+    \asyinclude[inline]{images/fig1-2.txt}
+    \caption{Two position vectors with radius, $r$, depicted as two radii of a circle}
+\end{figure}
 
 \subsection{A formula for the result}
 
 A formula for the result of the rotation can be derived as follows:
-
-\lstinputlisting[language=bash]{qrotation.sh}
 
 \pagebreak
 
