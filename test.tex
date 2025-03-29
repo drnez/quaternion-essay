@@ -5,8 +5,11 @@
 \usepackage{amsmath, amssymb, amsthm, physics, listings}
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
-\usepackage{graphicx, float, xcolor}
+\usepackage{graphicx, float, xcolor, tikz, pgfplots, pgfplotstable, tikz-3dplot}
 \usepackage[inline]{asymptote}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{patterns, angles, quotes}
 
 \usepackage[backend=biber, style=numeric, language=british,sorting=none]{biblatex}
 \addbibresource{references.bib}
@@ -70,9 +73,11 @@ In the modern day, they are used extensively in representing the rotations of 3-
 
 \subsection{The structure of this essay}
 
-After this brief introduction, some widely used key terms relating to quaternions will be defined, which will be essential to understanding the following chapters. Next, the additive and (more importantly) multiplicative properties of quaternions will be covered, which in effect govern how they are able to represent 3D rotations.
+After this brief introduction, some widely used key terms relating to quaternions will be defined, which will be essential to understanding the following chapters. Next, the additive and (more importantly) multiplicative properties of quaternions will be covered, which in effect govern how they are able to represent 3D rotations, and here the definition - and need for - of the quaternion number system will be derived.
 
-Having covered these areas, the mechanism in which they can be used for rotations will be discussed in depth, including relevant proofs and the properties which make them desirable to use. The essay will finish with comparisons to other methods of representing 3D rotations, as well as an example application of quaternions in a computational setting.
+Having covered these areas, the mechanism in which they can be used for rotations will be discussed in depth, including relevant proofs and how to construct rotations with quaternions. The essay will conclude by discussing the applications and desirable properties of quaternions.
+
+Wherever any information, or inspiration, is taken from a source, it is cited in square brackets, with the numbers corresponding to the bibliography entries. All explanations and diagrams that are not followed by a citation are my original work.
 
 \subsection{Definitions}
 
@@ -196,7 +201,7 @@ it is crucially not commutative: \cite{Math431}
 \begin{equation}
     q_1 \times q_2 \neq q_2 \times q_1.
 \end{equation}
-This may seem unintuitive at first, but it explains how multiple different rotations can be encoded within one quaternion even though the order of rotations matters (performing the same rotations in a different order produces a different result). \cite{Eater} This will be explored in much more depth later.
+This may seem unintuitive at first, but it explains how multiple different rotations can be encoded within one quaternion even though the order of rotations matters (performing the same rotations in a different order produces a different result). This will be explored in much more depth later.
 
 Note that while the multiplication of two quaternions is not commutative, the multiplication of a quaternion and a real number is:
 \begin{equation}
@@ -254,9 +259,25 @@ Consider a three-dimensional number, $t$, where:
 \end{equation}
 It would be possible to represent three-dimensional points in a number like $t$ simply by assigning each of $a, b, c$ to the point's $x, y, z$ co-ordinates. For example, $\left(2, 3, 4\right)$ could be represented as $2 + 3\vb{i} + 4\vb{j}$.
 
-However, where this number system fails is where its multiplicative rules are defined. It is logical to state that $\vb{i}^2 = \vb{j}^2 = -1$, but the problem comes with defining $\vb{ij}$.
+However, where this number system fails is where its multiplicative rules are defined. It is logical to state that $\vb{i}^2 = \vb{j}^2 = -1$ (this ensures orthogonality to the real component), but the problem comes with defining $\vb{ij}$.
 
-Since $\pm\vb{i}$, $\pm\vb{j}$, and $\pm1$ all have a magnitude of 1 (a "distance" of 1 from the origin when thinking of this graphically), the magnitude of $\vb{ij}$ must also be 1. This leaves three possibilities for the value of $\vb{ij}$: $\pm1, \pm\vb{i}, \pm\vb{j}$.
+It is essential that each component is orthogonal to each other, as this is what allows each component to represent a perpendicular axis. Consider two components not being orthogonal to each other. This would imply that each value in one axis, or of one component can be mapped to a value in the other. For example, if $\vb{i} = 2$, doubling any real value would yield its corresponding value in the $\vb{i}$ "axis". At this point, it would be illogical to refer to them as seperate axes, as the $\vb{i}$ component would simply be equal to a multiplication by 2, and such placing it in the real axis:
+
+\begin{center}
+    \begin{tikzpicture}[scale=1.5]
+        \draw[<->] (-4.8,0) -- (4.8,0);
+        % real
+        \foreach \i in {-4,-3,...,4}
+            \draw (\i,0.1) -- + (0, -0.2) node[below] {$\i$}; 
+        % i
+        \foreach \i/\label in {-4/-2i, -2/-i, 0/0, 2/i, 4/2i}
+            \node at (\i,0.3) {$\label$};  
+    \end{tikzpicture}
+\end{center}
+
+As such, the only way to have seperate axes is for no component to be equal to a scalar multiple of another. $\vb{i}^2 = -1 \implies \vb{i} = \sqrt{-1}$ achieves this, as no real number can equal $\sqrt{-1}$, therefore ensuring the orthogonality of the two axes.
+
+Since $\pm\vb{i}$, $\pm\vb{j}$, and $\pm1$ all have a magnitude of 1 (a "distance" of 1 from the origin when thinking of this graphically), the magnitude of $\vb{ij}$ must also be 1. This leaves three possibilities for the value of $\vb{ij}$: $\pm1, \pm\vb{i}, \pm\vb{j}$, since these are the only numbers with a magnitude of 1 in this number system.
 
 Having established that:
 \begin{equation}
@@ -350,21 +371,21 @@ In Section \ref{InitialMult} (page \pageref{InitialMult}), the distributivity of
 
 \subsection{Forming an equation}
 
-To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \cite{DRose} needs to be carried out, where $q$ is the unit quaternion defining the rotation, $r$ is the vector being rotated (as a pure quaternion), and $\bar{q}$ is the conjugate quaternion of $q$. This multiplication will yield a pure quaternion, like $r$, that describes the rotated vector.
+To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \cite{DRose} needs to be carried out, where $q$ is the unit quaternion defining the rotation, $r$ is the vector being rotated (as a pure quaternion), and $\bar{q}$ is the conjugate quaternion of $q$. This multiplication will yield a pure quaternion, like $r$, that describes the rotated vector (since the real component of $r$ is 0, the product's real component will necessarily also be 0).
 
-This may seem arbitrary at the moment, but it can be vaguely thought of as $q$ describing a rotation on $r$, while $\bar{q}$ exists as a "balancing force". The true mechanism behind how this works, and how $q$ can be determined to perform the desired rotation will be revealed later in this section.
+This may seem arbitrary at the moment, but it can be vaguely thought of as $q$ describing a rotation on $r$, while $\bar{q}$ exists as a "balancing force". The true mechanism behind how this works, and how $q$ can be determined to perform the desired rotation, will be explained through this chapter.
 
 \subsubsection{The need for unit quaternions} \label{NormMultProof}
 
 For this rotation to work, $q$ (and by definition also $\bar{q}$), need to be unit quaternions, so that the multiplication only rotates the vector quaternion $r$, and does not otherwise transform it.
 
-Consider multiplying two quaternions and a vector quaternion, $q_1$, $r$, and $q_2$ (as needs to be done for rotations) such that
+Consider multiplying two quaternions and a vector quaternion, $q_1$, $r$, and $q_2$ (as needs to be done for rotations) such that:
 \begin{equation}
     r' = q_1rq_2.
 \end{equation}
-The only way to ensure that $\abs{r'} = \abs{r}$ (which is needed to ensure the magnitude of the rotated vector is the same as that of the original one, meaning pure rotation has occurred, without any enlargements or stretches) is if $\abs{q_1} = \abs{q_2} = 1$, as multiplying quaternions also multiplies their norms: $\abs{q_1q_2} = \abs{q_1}\abs{q_2}$. \cite{Math431}
+The only way to ensure that $\abs{r'} = \abs{r}$ (which is needed to ensure the magnitude of the rotated vector is the same as that of the original one, meaning pure rotation has occurred, without any enlargements or stretches) is if $\abs{q_1} = \abs{q_2} = 1$, as multiplying quaternions also multiplies their norms: $\abs{q_1q_2} = \abs{q_1}\abs{q_2}$.
 
-This can be proven as follows:
+This (that $\abs{q_1q_2} = \abs{q_1}\abs{q_2}$) can be proven as follows:
 \begingroup
 \allowdisplaybreaks
 \begin{equation}
@@ -378,7 +399,7 @@ This can be proven as follows:
              & \phantom{q_1q_2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)\vb{i} \nonumber \\
              & \phantom{q_1q_2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)\vb{j} \nonumber \\
              & \phantom{q_1q_2=} + (a_1d_2 + b_1c_2 - b_2c_1 + a_2d_1)\vb{k} \nonumber \\
-             & \phantom{q_1q_2=} \text{as defined in Section \ref{QuatMultFull}}. \nonumber \\[15pt]
+             & \phantom{q_1q_2=} \text{as shown in Section \ref{QuatMultFull}}. \nonumber \\[15pt]
     \implies & \abs{q_1q_2}^2 = (a_1a_2 - b_1b_2 - c_1c_2 - d_1d_2)^2 \\
              & \phantom{\abs{q_1q_2}^2=} + (a_1b_2 + a_2b_1 + c_1d_2 - c_2d_1)^2 \nonumber \\
              & \phantom{\abs{q_1q_2}^2=} + (a_1c_2 - b_1d_2 + a_2c_1 + b_2d_1)^2 \nonumber \\
@@ -402,7 +423,7 @@ $\quad (\ref{eqnq1q2-1}) = (\ref{eqnq1q2-2}) \implies \abs{q_1q_2}^2 = (\abs{q_1
 
 This shows that if unit quaternions were not used for $q$ and $\bar{q}$ in this multiplication, the norm (magnitude) of $r$ would change, which is not desired, as this represents an enlargement, but if unit quaternions were used (i.e. $\abs{q} = \abs{\bar{q}} = 1$) then $\abs{qr\bar{q}} = \abs{q}\abs{r}\abs{\bar{q}} = 1\times\abs{r}\times1 = \abs{r}$ as desired.
 
-It also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not have to be a unit quaternion), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
+It also shows that $\abs{r}$ does not have to be $1$ (i.e. $r$ does not need to represent a unit vector), as the crucial detail is that the magnitude (norm) of $r$ is preserved, which is the case given that $\abs{q} = 1$ as shown above.
 
 \subsection{Finding the quaternion of rotation}
 
@@ -410,7 +431,7 @@ This section will explain how the values of the components in the formula $r_2 =
 
 Since $r_1$ is simply the position vector of the original point in the form of a pure quaternion (Section \ref{PureDef}), and $\bar{q}$ is the conjugate quaternion of $q$, all that is left is to define $q$.
 
-\subsubsection{2D rotation with complex numbers}
+\subsubsection{2D rotation with complex numbers} \label {Complex2DRotation}
 
 It will help to first consider performing 2-dimensional rotations \cite{ComplexRotation} through complex number multiplication, as quaternion rotation can be thought of as just a "scaled-up" version of this.
 
@@ -423,7 +444,7 @@ The "aim" of this rotation is, given $x_1, y_1$, and $\theta$, to be able to cal
 
 We can start by defining the original and final points in complex number form, as $(x_1 + y_1\vb{i})$ and $(x_2 + y_2\vb{i})$ respectively. We can also consider two position vectors, $u$ and $v$, from the origin to each of these points. Note that the $x$ and $y$ components of these vectors are the real and imaginary components of the complex numbers that represent them respectively. The final component to consider is the perpendicular line through $u$ that intersects the point $(x_2 + y_2\vb{i})$. This is all illustrated in Figure \ref{ComplexRotationFig}.
 
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
     \asyinclude[inline]{images/fig1-2.txt}
     \caption{A visual representation of 2-dimensional rotation using complex numbers.}
@@ -465,7 +486,7 @@ Therefore, as $u = x_1 + y_1\vb{i}$:
     \end{aligned}
 \end{equation}
 
-This shows that a multiplication by $(\cos\theta + \sin\theta\vb{i})$ rotates a point in 2-dimensional space by $\theta$. It is clear that this is a pure rotation (i.e. the distance of the points from the origin remains unchanged), both by the diagram in Figure \ref{ComplexRotationFig}, and by the identity $\cos^2\theta + \sin^2\theta \equiv 1$:
+This shows that a multiplication by $(\cos\theta + \sin\theta\vb{i})$ - a complex number with real component $\cos\theta$ and imaginary component $\sin\theta$ - rotates a point in 2-dimensional space by $\theta$ radians. It is clear that this is a pure rotation (i.e. the distance of the points from the origin remains unchanged), both by the diagram in Figure \ref{ComplexRotationFig}, and by the identity $\sin^2\theta + \cos^2\theta \equiv 1$:
 \begin{equation}
     \begin{aligned}
         \text{let } c &= \cos\theta + \sin\theta\vb{i} \\
@@ -478,13 +499,90 @@ Therefore, performing this multiplication cannot change the magnitude of the poi
 
 Using quaternions to rotate 3-dimensional points is not so different to the process considered above, where complex numbers are used to rotate 2-dimensional points, and most of the principles considered there are also relevant here.
 
-\subsection{The purpose of $\bar{q}$}
+However, there are some key challenges. Firstly, it is not sufficient to simply rotate around the origin, like we did with 2-dimensional points - to rotate a 3-dimensional point, an axis of rotation also has to be defined. Plus, it is much more difficult to diagramatically show this, since we cannot intuitively visualise 4-dimensional space.
+
+We can attempt to visualise a unit quaternion in a 4-dimensional space as in Figure \ref{SphereQuaternionRepresentation}, where the shaded 2-dimensional space represents the 3-dimensional imaginary ($\vb{i, j, k}$) components of the quaternions, while the vertical component of the sphere represents the real component. 
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        \draw (0,0) circle (2cm);
+        \draw (-2,0) arc (180:360:2 and 0.6) -- (2,0) arc (0:180:2 and 0.6);
+        \fill[pattern=vertical lines] (-2,0) arc (180:360:2 and 0.6) -- (2,0) arc (0:180:2 and 0.6);
+        \fill (0,0) circle (1.5pt);
+        \draw[->, thick] (0,0) -- node[above]{$q$} (1.5,1.323);
+    \end{tikzpicture}
+    \caption{A 3-dimensional representation of quaternions. \cite{Penguin}}
+    \label{SphereQuaternionRepresentation}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        \draw (0,0) coordinate (A) circle (2.35cm);
+        \fill (0,0) circle (2pt);
+        \draw[<->, thick] (0,-3) -- (0,3);
+        \draw[<->, thick] (-3,0) -- (3,0);
+        \draw (0,2.35) node[anchor=south east]{$A$};
+        \draw (0,-2.35) node[anchor=north east]{$-A$};
+        \draw (2.35,0) node[anchor=north west]{$1$};
+        \draw (-2.35,0) node[anchor=north east]{$-1$};
+        \draw[->, thick] (0,0) -- (1.5,1.809);
+        \draw[dotted, thick] (1.5,0) coordinate (B) -- (1.5,1.809) coordinate (C);
+        \node[anchor=north] at (0.75,0) {$\cos\theta$};
+        \node[anchor=west] at (1.5,0.9045) {$\sin\theta$};
+        \draw pic["$\theta$", draw, thick, angle eccentricity=1.5] {angle = B--A--C};
+    \end{tikzpicture}
+    \caption{4-dimensional rotations viewed on a unit circle.}
+    \label{4DRotationsLike2DFig}
+\end{figure}
+
+In this representation, the $\vb{i,j,k}$ space is thought of as one component, perpendicular to the real numbers. Considering the $\vb{i,j,k}$ space as defining the axis we are rotating around (in the same way that pure quaternions represent vectors - Section \ref{PureDef}), that axis will also be perpendicular to the real numbers. We can therefore think of a new diagram, Figure \ref{4DRotationsLike2DFig}, similar to Figure \ref{ComplexRotationFig}, but with the new one, the axis perpendicular to the real numbers will be the chosen axis to rotate around, instead of necessarily being $\vb{i}$. This axis, $A$, can be represented as a pure, unit quaternion, where:
+\begin{equation}
+    A = x\vb{i} + y\vb{j} + z\vb{k}, \quad\quad
+    \sqrt{x^2 + y^2 + z^2} = 1, \quad\quad
+    x, y, z \in \mathbb{R}.
+\end{equation}
+
+
+Figure \ref{4DRotationsLike2DFig} shows diagramatically how we can use the same method for quaternion rotations as with 2-dimensional complex number rotations, by representing $q$ in the form:
+\begin{equation}
+    q = \cos\theta + A\sin\theta = \cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta,
+\end{equation}
+where $q$ is the quaternion that a point (in pure quaternion form) is multiplied by for a rotation of $\alpha$ radians around the axis $A$. Do note that this does not rotate the point $\theta$ radians - the relation between $\theta$ and $\alpha$ here will be explained in Section \ref{QBarSection}.
+
+There are two intuituve explanations for why cosine is used for the real component of this quaternion, and sine for the imaginary component.
+
+Firstly, it can be explained graphically, in the same way as for complex number rotation: in short, multiplication by $A$ (analogous to $\vb{i}$ for complex numbers) makes the imaginary component of the rotation quaternion parallel to the opposite (to $\theta$) side of the theoretical right-angled triangle (Figure \ref{ComplexRotationFig}), and multiplying by $\sin\theta$ aligns its magnitude with it. See Section \ref{Complex2DRotation} for a much more in-depth explanation, which is applicable to quaternions as well, just by replacing $\vb{i}$ with the 3-dimensional axis of rotation, $A$. This method is less intuitive with quaternions, and better suited to complex numbers, due to the difficulty in accurately representing quaternions diagrammatically.
+
+Perhaps the more intuitive method is to consider the sine and cosine functions themselves. For an angle of 0 (or any multiple of $2\pi$ - any full rotation), sine and cosine output 0 and 1 respectively. LINK THIS HERE TO THE DESIRED BEHAVIOUR WHEN "NOT" ROTATED (ROTATED BY 0) AND ANYTHING MORE RIGOROUS RELEVANT?
+
+Finally, since $A$ is a (pure) unit quaternion (which implies $x^2 + y^2 + z^2 = 1$), and $\sin^2\theta + \cos^2\theta \equiv 1$, this will guarantee that $q$ will be a unit quaternion too, as desired:
+\begin{equation}
+    \begin{aligned}
+        \abs{q} &= \sqrt{\cos^2\theta + (x\sin\theta)^2 + (y\sin\theta)^2 + (x\sin\theta)^2} \\
+                &= \sqrt{\cos^2\theta + \sin^2\theta(x^2 + y^2 + z^2)} \\
+                &= \sqrt{\cos^2\theta + \sin^2\theta} \\
+                &= 1.
+    \end{aligned}
+\end{equation}
+
+\subsection{The purpose of $\bar{q}$} \label{QBarSection}
+
+theta/2 w sterographic projection.
 
 Visualise the rotation... double transformative effects...
+q bar cancelling out unwanted parallel to axis rotation
 
 \subsection{Desirable properties?}
 
-combinding rotations => why multiplication is not commutative
+combining rotations => why multiplication is not commutative
+
+from euler angles (only once trig for interpolation too)
+
+interpolation (no gimbal lock)
+
+two quaternions (q and -q) for each rotation
 
 \pagebreak
 
