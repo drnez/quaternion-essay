@@ -14,12 +14,13 @@
 \usepackage[backend=biber, style=numeric, language=british,sorting=none]{biblatex}
 \addbibresource{references.bib}
 
-\graphicspath{{images/}}
-
 \usepackage[a4paper, top=1in, bottom=1in, left=1in, right=1in, heightrounded]{geometry}
 \renewcommand{\baselinestretch}{1.15}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.8em}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\setlength{\skip\footins}{1cm}
 
 \title{The use of quaternions in the computation of 3D rotations}
 \author{Shayan Nezami}
@@ -77,7 +78,11 @@ After this brief introduction, some widely used key terms relating to quaternion
 
 Having covered these areas, the mechanism in which they can be used for rotations will be discussed in depth, including relevant proofs and how to construct rotations with quaternions. The essay will conclude by discussing the applications and desirable properties of quaternions.
 
+The main body of the essay, where most of the explanations are, after the key definitions and properties are stated, starts from Section \ref{ijkComponentsSection}, on page \pageref{ijkComponentsSection}.
+
 Wherever any information, or inspiration, is taken from a source, it is cited in square brackets, with the numbers corresponding to the bibliography entries. All explanations and diagrams that are not followed by a citation are my original work.
+
+This essay has been written with \LaTeX{} using the VimTeX plugin. Figure 1 has been created with GeoGebra and Asymptote, and Figure 2 and Figure 3 have been made with TikZ.
 
 \subsection{Definitions}
 
@@ -231,13 +236,13 @@ Do note that the order of the quaternion's imaginary components ($\vb{i, j, k}$)
 
 The result of this distribution, however, is not the final product - it can be further simplified using the defining quaternion multiplication rules, which will be explored in the following subsection.
 
-\subsection{The $\vb{i, j, k}$ components}
+\subsection{The $\vb{i, j, k}$ components} \label{ijkComponentsSection}
 
 \subsubsection{The defining rules}
 
-While the following rules \cite{Eater} could simply be considered to be multiplicative rules, they almost single-handedly define quaternions as a number system, and so deserve their own section.
+While the following rules \cite{Eater} could be considered to be simply multiplicative rules, they almost single-handedly define quaternions as a number system, and so deserve their own section.
 
-They were famously carved into a bridge by William Rowan Hamilton in 1843 \cite{QuaternionWiki}, after discovering that four, not three, dimensional numbers (quaternions) were in fact needed to describe 3D rotations:
+They were famously carved into a bridge by William Rowan Hamilton in 1843 \cite{QuaternionWiki}, after discovering that four-, not three-, dimensional numbers (quaternions) were in fact needed to describe 3D rotations:
 \begin{subequations} \label{MultProperties1}
     \begin{gather}
         \vb{i}^2 = \vb{j}^2 = \vb{k}^2 = \vb{i}\vb{j}\vb{k} = -1, \\
@@ -369,7 +374,7 @@ In Section \ref{InitialMult} (page \pageref{InitialMult}), the distributivity of
 \pagebreak
 \section{Calculating Rotations}
 
-\subsection{Forming an equation}
+\subsection{Forming an equation} \label{qrqIntro}
 
 To calculate a rotation with quaternions, a multiplication of form $qr\bar{q}$ \cite{DRose} needs to be carried out, where $q$ is the unit quaternion defining the rotation, $r$ is the vector being rotated (as a pure quaternion), and $\bar{q}$ is the conjugate quaternion of $q$. This multiplication will yield a pure quaternion, like $r$, that describes the rotated vector (since the real component of $r$ is 0, the product's real component will necessarily also be 0).
 
@@ -520,44 +525,55 @@ We can attempt to visualise a unit quaternion in a 4-dimensional space as in Fig
     \centering
     \begin{tikzpicture}
         \draw (0,0) coordinate (A) circle (2.35cm);
+        \draw (-2.35,0) arc (180:360:2.35 and 1.1) -- (2.35,0) arc (0:180:2.35 and 1.1);
         \fill (0,0) circle (2pt);
-        \draw[<->, thick] (0,-3) -- (0,3);
-        \draw[<->, thick] (-3,0) -- (3,0);
+
+        \draw[<->] (0,-3) -- (0,3);
+        \draw[<->] (-3,0) -- (3,0);
+
         \draw (0,2.35) node[anchor=south east]{$A$};
         \draw (0,-2.35) node[anchor=north east]{$-A$};
         \draw (2.35,0) node[anchor=north west]{$1$};
         \draw (-2.35,0) node[anchor=north east]{$-1$};
-        \draw[->, thick] (0,0) -- (1.5,1.809);
-        \draw[dotted, thick] (1.5,0) coordinate (B) -- (1.5,1.809) coordinate (C);
-        \node[anchor=north] at (0.75,0) {$\cos\theta$};
-        \node[anchor=west] at (1.5,0.9045) {$\sin\theta$};
+
+        \draw[->, thick] (0,0) -- (0.9,1.5) node[above]{$\quad r'$};
+        \draw[->, thick] (0,0) -- (2.15,0.949) node[right]{$r$};
+
+        \draw[dotted, thick] (1.623,0.716) coordinate (B) -- (0.9,1.5) coordinate (C);
+        \node[anchor=north] at (1.2,0.55) {$\cos\theta$};
+        \node[anchor=west] at (1.25,1.3) {$\sin\theta$};
+
         \draw pic["$\theta$", draw, thick, angle eccentricity=1.5] {angle = B--A--C};
     \end{tikzpicture}
     \caption{4-dimensional rotations viewed on a unit circle.}
     \label{4DRotationsLike2DFig}
 \end{figure}
 
-In this representation, the $\vb{i,j,k}$ space is thought of as one component, perpendicular to the real numbers. Considering the $\vb{i,j,k}$ space as defining the axis we are rotating around (in the same way that pure quaternions represent vectors - Section \ref{PureDef}), that axis will also be perpendicular to the real numbers. We can therefore think of a new diagram, Figure \ref{4DRotationsLike2DFig}, similar to Figure \ref{ComplexRotationFig}, but with the new one, the axis perpendicular to the real numbers will be the chosen axis to rotate around, instead of necessarily being $\vb{i}$. This axis, $A$, can be represented as a pure, unit quaternion, where:
+In this representation, the $\vb{i,j,k}$ space is thought of as one component, perpendicular to the real numbers. Considering the $\vb{i,j,k}$ space as defining the axis we are rotating around (in the same way that pure quaternions represent vectors - Section \ref{PureDef}), that axis will also be perpendicular to the real numbers, by definition of the orthogonality of the four quaternion components.
+
+We can therefore think of a new diagram, Figure \ref{4DRotationsLike2DFig}, similar to Figure \ref{ComplexRotationFig}, but with the axis perpendicular to the real numbers being the chosen axis to rotate around, instead of $\vb{i}$. This axis, $A$, can be represented as a pure, unit quaternion, where:
 \begin{equation}
     A = x\vb{i} + y\vb{j} + z\vb{k}, \quad\quad
     \sqrt{x^2 + y^2 + z^2} = 1, \quad\quad
     x, y, z \in \mathbb{R}.
 \end{equation}
 
+Figure \ref{4DRotationsLike2DFig} shows diagramatically how the same method can be used for quaternion rotations as with 2-dimensional complex number rotations, but with a rotation around the axis $A$ instead of around the origin. While in this diagram $\abs{r} = 1$, as mentioned in Section \ref{qrqIntro}, this is not necessary.
 
-Figure \ref{4DRotationsLike2DFig} shows diagramatically how we can use the same method for quaternion rotations as with 2-dimensional complex number rotations, by representing $q$ in the form:
+To rotate $r$ to $r'$, just like with complex numbers, $r'$ can be considered to be the sum of two "vectors" (technically quaternions in this 4-dimensional space): the proportion of $r$ in the direction of (parallel to) $r$, and the proportion of $r$ perpendicular to $r$. As shown by the right-angled triangle formed in the diagram (and explained more thoroughly in Section \ref{Complex2DRotation} with complex numbers), the vector parallel to $r$ is $r\cos\theta$, and the vector perpendicular to it is $Ar\sin\theta$. Here, $A$ is used instead of $\vb{i}$, as it is being thought of as the perpendicular axis to the real numbers. Therefore, we can write $r'$ (the rotated point) as:
+\footnotetext[1]{This is not fully accurate, but should be considered so for the time being. It will be explained by in Section \ref{QBarSection}.}
 \begin{equation}
-    q = \cos\theta + A\sin\theta = \cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta,
+    \begin{aligned}
+        r' &= r\cos\theta + Ar\sin\theta \\
+           &= (\cos\theta + A\sin\theta)r \\
+           &= (\cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta)r \\
+           &= qr. \footnotemark[1] \\
+        \implies q &= \cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta,\footnotemark[1]
+    \end{aligned}
 \end{equation}
-where $q$ is the quaternion that a point (in pure quaternion form) is multiplied by for a rotation of $\alpha$ radians around the axis $A$. Do note that this does not rotate the point $\theta$ radians - the relation between $\theta$ and $\alpha$ here will be explained in Section \ref{QBarSection}.
+where $q$ is the quaternion that $r$ (a point being rotataed in pure quaternion form) is multiplied by for a rotation of $\theta$ radians around the axis $A$.
 
-There are two intuituve explanations for why cosine is used for the real component of this quaternion, and sine for the imaginary component.
-
-Firstly, it can be explained graphically, in the same way as for complex number rotation: in short, multiplication by $A$ (analogous to $\vb{i}$ for complex numbers) makes the imaginary component of the rotation quaternion parallel to the opposite (to $\theta$) side of the theoretical right-angled triangle (Figure \ref{ComplexRotationFig}), and multiplying by $\sin\theta$ aligns its magnitude with it. See Section \ref{Complex2DRotation} for a much more in-depth explanation, which is applicable to quaternions as well, just by replacing $\vb{i}$ with the 3-dimensional axis of rotation, $A$. This method is less intuitive with quaternions, and better suited to complex numbers, due to the difficulty in accurately representing quaternions diagrammatically.
-
-Perhaps the more intuitive method is to consider the sine and cosine functions themselves. For an angle of 0 (or any multiple of $2\pi$ - any full rotation), sine and cosine output 0 and 1 respectively. LINK THIS HERE TO THE DESIRED BEHAVIOUR WHEN "NOT" ROTATED (ROTATED BY 0) AND ANYTHING MORE RIGOROUS RELEVANT?
-
-Finally, since $A$ is a (pure) unit quaternion (which implies $x^2 + y^2 + z^2 = 1$), and $\sin^2\theta + \cos^2\theta \equiv 1$, this will guarantee that $q$ will be a unit quaternion too, as desired:
+Since $A$ is a (pure) unit quaternion (which implies $x^2 + y^2 + z^2 = 1$), and $\sin^2\theta + \cos^2\theta \equiv 1$, this will guarantee that $q$ will be a unit quaternion too, as desired:
 \begin{equation}
     \begin{aligned}
         \abs{q} &= \sqrt{\cos^2\theta + (x\sin\theta)^2 + (y\sin\theta)^2 + (x\sin\theta)^2} \\
@@ -567,7 +583,51 @@ Finally, since $A$ is a (pure) unit quaternion (which implies $x^2 + y^2 + z^2 =
     \end{aligned}
 \end{equation}
 
+The use of sine for the imaginary axis of rotation and cosine for the real component can also be shown by looking at the sine and cosine functions themselves. For an angle of 0 (or any multiple of $2\pi$ - any full rotation), sine and cosine output 0 and 1 respectively. When the angle of rotation, $\theta$, is 0, the desired effect is that $qr$ yields $r$. If sine and cosine are used as given:
+\begin{equation}
+    r' = qr\footnotemark[1] = (\cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta)r = 1r = r,
+\end{equation}
+as desired. However, if the roles of sine and cosine were reversed, when $\theta = 0$:
+\begin{equation}
+    r' = qr\footnotemark[1] = (\sin\theta + (x\vb{i} + y\vb{j} + z\vb{k})\cos\theta)r = (x\vb{i} + y\vb{j} + z\vb{k})r.
+\end{equation}
+This yields the product of $r$ and axis of rotation, instead of just $r$ as desired. Generalising, it is clear that (in the first quadrant) increasing $\theta$ increases $\sin\theta$ and decreases $\cos\theta$, and the "aim" when rotating is that increasing theta (in the first quadrant) should decrease the parallel (unchanged) component of $r$ and increase the its perpendicular (rotated) component as a proportion of $r'$. This is also clear when looking at Figure \ref{4DRotationsLike2DFig}. Therefore, it is logical that cosine should be used for the real component, and sine for the imaginary rotation axis.
+
+However, there is a problem with the definition of a quaternion rotation above. In fact, $r' \neq qr, r' = qr\bar{q}$, as stated in Section \ref{qrqIntro}. The following section will explain the reason for this, and how the formula above should be changed to reflect this.
+
 \subsection{The purpose of $\bar{q}$} \label{QBarSection}
+
+While it is true, as shown above, that a mutliplication by $qr$ rotates $r$ by $\theta$ radians around the axis, $A$, defined by $q$, it also performs a second, undesired, rotation, parallel to $A$. This is best demonstrated through a stereographic projection \cite{Eater} \cite{Penguin}.
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        \draw[thick] (0,0) node[anchor=north west]{$1$} coordinate (A) circle (2.35cm);
+        \draw[dashed, thick] (-2.35,0) arc (180:360:2.35 and 1.4) -- (2.35,0) arc (0:180:2.35 and 1.4);
+        \fill (0,0) circle (2pt);
+
+        \draw[dotted, very thick] (0,-2.35) arc (-90:90:1.6 and 2.35) -- (0,2.35) arc (90:270:1.6 and 2.35);
+
+        \draw[<->] (0,-3) -- (0,3);
+        \draw[<->] (-3,0) -- (3,0);
+        \draw[<->] (-2.5,-2) -- (2.5,2);
+
+        \draw (0,2.35) node[anchor=south east]{$\vb{k}$};
+        \draw (0,-2.35) node[anchor=north east]{$-\vb{k}$};
+        \draw (2.35,0) node[anchor=north west]{$\vb{i}$};
+        \draw (-2.35,0) node[anchor=north east]{$-\vb{i}$};
+        \draw (-2.5,-2) node[anchor=north east]{$-\vb{j}$};
+        \draw (2.5,2) node[anchor=north west]{$\vb{j}$};
+    \end{tikzpicture}
+    \caption{A stereographic projection of unit quaternions in 3-dimensional space. \cite{Penguin}}
+    \label{SterographicFig}
+\end{figure}
+
+This stereographic projection (shown in Figure \ref{SterographicFig}) maps every unit quaternion onto a point within 3-dimensional space. Note that the origin reprents 1: the unit quaternion with real component 1 and therefore no imaginary component. The edge of this sphere that has been drawn represents every unit quaternion with a real componenent 0 (i.e. all the pure unit quaternions). The space inside the sphere represents quaternions with real component betweeen 1 and 0, and the space outside the sphere represents the quaternions with negative real components. As a quaternion's real component tends towards -1, its representation in this diagram tends towards being infinitely displaced from the centre.
+
+We are looking to rotate 3-dimensional points, that are represented as pure quaternions, and as such these points will all lie on the edge of the sphere, so we can place our focus on that part of the diagram. Although the quaternion being rotated does not need to be a unit quaternion, this diagram doees not represent quaternions with any other magnitude, so the explanations will assume the point being rotated has magnitude 1. However, the explanations will still be relevant for any other pure quaternion, and the diagram can be modified to show quaternions of any magnitude by multiplying each component in the diagram by the desired magnitude. For example, for a magnitude of 2, on the diagram: $1 \rightarrow 2, -\vb{i} \rightarrow -2\vb{i}$, etc.
+
+We can now imagine multiplications of quaternions using this diagram. If we consider all the points on the sphere to have been left multiplied by $\vb{i}$ (note the importance of the order of multiplication due to the non-commutativity of quaternion multiplication)
 
 theta/2 w sterographic projection.
 
@@ -576,7 +636,7 @@ q bar cancelling out unwanted parallel to axis rotation
 
 \subsection{Desirable properties?}
 
-combining rotations => why multiplication is not commutative
+combining rotations => why multiplication is not commutative PUT IN DEFINITION SECTION AND REMOVE ALL REFS TO 'WILL BE EXPLAINED LATER'
 
 from euler angles (only once trig for interpolation too)
 
