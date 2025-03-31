@@ -56,7 +56,6 @@
 
 \maketitle	
 \pagebreak
-
 \tableofcontents
 \pagebreak
 
@@ -82,7 +81,7 @@ The main body of the essay, where most of the explanations are, after the key de
 
 Wherever any information, or inspiration, is taken from a source, it is cited in square brackets, with the numbers corresponding to the bibliography entries. All explanations and diagrams that are not followed by a citation are my original work.
 
-This essay has been written with \LaTeX{} using the VimTeX plugin. Figure 1 has been created with GeoGebra and Asymptote, while Figures 2, 3, and 4 have been made with TikZ.
+This essay has been written with \LaTeX{} using the VimTeX plugin. Figure \ref{ComplexRotationFig} has been created with GeoGebra and Asymptote, while all of the other Figures have been made with TikZ.
 
 \subsection{Definitions}
 
@@ -128,7 +127,7 @@ It can be proven that this is indeed a unit quaternion, as
     \abs{q_u} = \sqrt{\left(\frac{2}{3\sqrt{6}}\right)^2+\left(\frac{3}{3\sqrt{6}}\right)^2+\left(\frac{4}{3\sqrt{6}}\right)^2+\left(\frac{5}{3\sqrt{6}}\right)^2} = 1.
 \end{equation}
 
-\subsubsection{The conjugate of a quaternion}
+\subsubsection{The conjugate of a quaternion} \label{qBarDef}
 
 Every quaternion, $q$, has a conjugate, $\bar{q}$, which is defined as:
 \begin{equation}
@@ -139,7 +138,6 @@ Every quaternion, $q$, has a conjugate, $\bar{q}$, which is defined as:
 \end{equation}
 Note that $\bar{q}$ can also be written $q^*$. \cite{DRose}
 
-\pagebreak
 \section{Defining Properties of Quaternions}
 
 The algebraic field of quaternions is defined by certain core properties, which are explored below.
@@ -266,9 +264,10 @@ It would be possible to represent three-dimensional points in a number like $t$ 
 
 However, where this number system fails is where its multiplicative rules are defined. It is logical to state that $\vb{i}^2 = \vb{j}^2 = -1$ (this ensures orthogonality to the real component), but the problem comes with defining $\vb{ij}$.
 
-It is essential that each component is orthogonal to each other, as this is what allows each component to represent a perpendicular axis. Consider two components not being orthogonal to each other. This would imply that each value in one axis, or of one component can be mapped to a value in the other. For example, if $\vb{i} = 2$, doubling any real value would yield its corresponding value in the $\vb{i}$ "axis". At this point, it would be illogical to refer to them as seperate axes, as the $\vb{i}$ component would simply be equal to a multiplication by 2, and such placing it in the real axis:
+It is essential that each component is orthogonal to each other, as this is what allows each component to represent a perpendicular axis. Consider two components not being orthogonal to each other. This would imply that each value in one axis, or of one component can be mapped to a value in the other. For example, if $\vb{i} = 2$, doubling any real value would yield its corresponding value in the $\vb{i}$ "axis". At this point, it would be illogical to refer to them as separate axes, as the $\vb{i}$ component would simply be equal to a multiplication by 2, and such placing it in the real axis, as shown in Figure \ref{RealLineFig}.
 
-\begin{center}
+\begin{figure}[H]
+    \centering
     \begin{tikzpicture}[scale=1.5]
         \draw[<->] (-4.8,0) -- (4.8,0);
         % real
@@ -278,9 +277,11 @@ It is essential that each component is orthogonal to each other, as this is what
         \foreach \i/\label in {-4/-2i, -2/-i, 0/0, 2/i, 4/2i}
             \node at (\i,0.3) {$\label$};  
     \end{tikzpicture}
-\end{center}
+    \caption{A number line visualising the mapping of the real and imaginary axes were they not orthogonal.}
+    \label{RealLineFig}
+\end{figure}
 
-As such, the only way to have seperate axes is for no component to be equal to a scalar multiple of another. $\vb{i}^2 = -1 \implies \vb{i} = \sqrt{-1}$ achieves this, as no real number can equal $\sqrt{-1}$, therefore ensuring the orthogonality of the two axes.
+As such, the only way to have separate axes is for no component to be equal to a scalar multiple of another. $\vb{i}^2 = -1 \implies \vb{i} = \sqrt{-1}$ achieves this, as no real number can equal $\sqrt{-1}$, therefore ensuring the orthogonality of the two axes.
 
 Since $\pm\vb{i}$, $\pm\vb{j}$, and $\pm1$ all have a magnitude of 1 (a "distance" of 1 from the origin when thinking of this graphically), the magnitude of $\vb{ij}$ must also be 1. This leaves three possibilities for the value of $\vb{ij}$: $\pm1, \pm\vb{i}, \pm\vb{j}$, since these are the only numbers with a magnitude of 1 in this number system.
 
@@ -303,7 +304,7 @@ The only solution that can be found to this problem is equating the result of $\
     \vb{k}^2 = -1, \quad \vb{ij} = \vb{k}.
 \end{equation}
 
-We now also need to define the multiplicative rules of $\vb{k}$ with $\vb{i}$ and $\vb{j}$. This is now fairly straightforward: we know that any component multiplied by another must form a seperate component, and that the product of a component must be unique with any other component. Considering what we know about $\vb{i}$:
+We now also need to define the multiplicative rules of $\vb{k}$ with $\vb{i}$ and $\vb{j}$. This is now fairly straightforward: we know that any component multiplied by another must form a separate component, and that the product of a component must be unique with any other component. Considering what we know about $\vb{i}$:
 \begin{subequations}
     \begin{alignat}{2}
         & \vb{i} \times 1 && = \vb{i}, \\
@@ -346,13 +347,13 @@ Putting these all together, we get:
         \vb{ki} = -\vb{ik} = \vb{j}.
     \end{gather}
 \end{subequations}
-The product of any two seperate components ($\vb{i, j, k}$) yields the other, and reversing the order flips the sign of the result (e.g. $\vb{ij} = \vb{k} \implies \vb{ji} = -\vb{k}$).
+The product of any two separate components ($\vb{i, j, k}$) yields the other, and reversing the order flips the sign of the result (e.g. $\vb{ij} = \vb{k} \implies \vb{ji} = -\vb{k}$).
 
 Note that these equations (\ref{MultProperties2}) are the same as those defined for quaternions (\ref{MultProperties1}) on page \pageref{MultProperties1}. We have now in effect derived the quaternion number system by establishing that a three-dimensional number system cannot be defined.
 
 \subsubsection{Simplifying the multiplication} \label{QuatMultFull}
 
-In Section \ref{InitialMult} (page \pageref{InitialMult}), the distributivity of quaternion multiplication was demonstrated through calculating the product of two sample quaternions, but with the multiplicative rules that we have defined (\ref{MultProperties1}), we can now simplify this futher:
+In Section \ref{InitialMult} (page \pageref{InitialMult}), the distributivity of quaternion multiplication was demonstrated through calculating the product of two sample quaternions, but with the multiplicative rules that we have defined (\ref{MultProperties1}), we can now simplify this further:
 \begin{equation}
     \begin{aligned}
         & (a_1 + b_1\vb{i} + c_1\vb{j} + d_1\vb{k})(a_2 + b_2\vb{i} + c_2\vb{j} + d_2\vb{k}) \\
@@ -371,7 +372,6 @@ In Section \ref{InitialMult} (page \pageref{InitialMult}), the distributivity of
     \end{aligned}
 \end{equation}
 
-\pagebreak
 \section{Calculating Rotations}
 
 \subsection{Forming an equation} \label{qrqIntro}
@@ -597,7 +597,7 @@ However, there is a problem with the definition of a quaternion rotation above. 
 
 \subsection{The purpose of $\bar{q}$} \label{QBarSection}
 
-While it is true, as shown above, that a mutliplication by $qr$ rotates $r$ by $\theta$ radians around the axis, $A$, defined by $q$, it also performs a second, undesired, rotation, parallel to $A$. This is best demonstrated through a stereographic projection \cite{Eater} \cite{Penguin}.
+While it is true, as shown above, that a mutiplication by $qr$ rotates $r$ by $\theta$ radians around the axis, $A$, defined by $q$, it also performs a second, undesired, rotation, parallel to $A$. This is best demonstrated through a stereographic projection \cite{Eater} \cite{Penguin}.
 
 \begin{figure}[ht]
     \centering
@@ -623,11 +623,42 @@ While it is true, as shown above, that a mutliplication by $qr$ rotates $r$ by $
     \label{SterographicFig}
 \end{figure}
 
-This stereographic projection (shown in Figure \ref{SterographicFig}) maps every unit quaternion onto a point within 3-dimensional space. Note that the origin reprents 1: the unit quaternion with real component 1 and therefore no imaginary component. The edge of this sphere that has been drawn represents every unit quaternion with a real componenent 0 (i.e. all the pure unit quaternions). The space inside the sphere represents quaternions with real component betweeen 1 and 0, and the space outside the sphere represents the quaternions with negative real components. As a quaternion's real component tends towards -1, its representation in this diagram tends towards being infinitely displaced from the centre.
+This stereographic projection (shown in Figure \ref{SterographicFig}) maps every unit quaternion onto a point within 3-dimensional space. Note that the origin represents 1: the unit quaternion with real component 1 and therefore no imaginary component. The edge of this sphere that has been drawn represents every unit quaternion with a real component 0 (i.e. all the pure unit quaternions). The space inside the sphere represents quaternions with real component between 1 and 0, and the space outside the sphere represents the quaternions with negative real components. As a quaternion's real component tends towards -1, its representation in this diagram tends towards being infinitely displaced from the centre.
 
 We are looking to rotate 3-dimensional points, that are represented as pure quaternions, and as such these points will all lie on the edge of the sphere, so we can place our focus on that part of the diagram. Although the quaternion being rotated does not need to be a unit quaternion, this diagram doees not represent quaternions with any other magnitude, so the explanations will assume the point being rotated has magnitude 1. However, the explanations will still be relevant for any other pure quaternion, and the diagram can be modified to show quaternions of any magnitude by multiplying each component in the diagram by the desired magnitude. For example, for a magnitude of 2, on the diagram: $1 \rightarrow 2, -\vb{i} \rightarrow -2\vb{i}$, etc.
 
-We can now imagine multiplications of quaternions using this diagram. If we consider all the points on the sphere to have been left multiplied by $\vb{i}$ (note the importance of the order of multiplication due to the non-commutativity of quaternion multiplication)
+We can now imagine some multiplications of quaternions using this diagram. If we consider all the points on the sphere to have been left multiplied by $\vb{i}$ (note the importance of the order of multiplication due to the non-commutativity of quaternion multiplication), using the multiplicative rules (Equation \ref{MultProperties1}, Section \ref{ijkComponentsSection}) $\vb{ij} = \vb{k}$, and $\vb{ik} = -\vb{j}$, we can deduce that the point at $\vb{k}$ will be mapped to the point at $-\vb{j}$, the point at $-\vb{j}$ to $-\vb{k}$, the point at $-\vb{k}$ to $\vb{j}$, and finally the point at $\vb{j}$ to $\vb{k}$. On the diagram (Figure \ref{SterographicFig}), this looks like an anticlockwise rotation on the dotted circle that connects the $\vb{k}$ and $\vb{j}$ axes.
+
+Until this point, there have been no undesired effects - multiplying by $\vb{i}$ has resulted in a rotation perpendicular to, so around, the $\vb{i}$ axis, as desired. However, left multiplying by $\vb{i}$ also causes a second transformation: one that is parallel to the $\vb{i}$ axis. More generally, a multiplication by an axis, $A$, causes a second rotation parallel to the axis. This can clearly be seen in the diagram, where left multiplying by $\vb{i}$ also maps $\vb{i}$ to $-1$, $-1$ to $-\vb{i}$, $-\vb{i}$ to 1, and 1 to $\vb{i}$. While -1 cannot be explicitly seen in the diagram, it is the point of infinite distance from the centre of the unit circle, and so this rotation can be considered to "wrap-around" the diagram in a fourth dimension that we do not have access to. Figure \ref{LeftMultIFig} shows a visualision of this. The arrows indicate the direction of motion upon left multiplication by $\vb{i}$.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.5]
+        \draw[>->, very thick] (-4,0) -- (4,0);
+        \draw[-, very thick] (-5.0047,0) -- (5.0047,0);
+        \draw[>->, very thick] (-3,0) -- (3,0);
+        \draw (-5,0) arc (180:360:5 and -0.6);
+        \node[anchor=south] at (0,0.6) {$-1$};
+        \draw (-2,0.1) -- + (0, -0.2) node[below] {$-\vb{i}$}; 
+        \draw (2,0.1) -- + (0, -0.2) node[below] {$\vb{i}$}; 
+        \draw (0,0.1) -- + (0, -0.2) node[below] {$1$}; 
+    \end{tikzpicture}
+    \caption{A representation of the position of -1 in Figure \ref{SterographicFig}.}
+    \label{LeftMultIFig}
+\end{figure}
+
+The same two rotations occur with any axis of rotation, $A$, not necessarily just $\vb{i}$ or a single imaginary component. This behaviour is undesired, as the each multiplication should represent exactly one rotation around one axis. Therefore, the solution is to multiply the current expression, $qr$, by a third component, that will cancel out the rotation parallel to the axis, but not affect the rotation around it. Right multiplying by $\bar{q}$ has this effect. Using the definition of $\bar{q}$ in Section \ref{qBarDef}:
+\begin{equation}
+    \begin{aligned}
+        q &= a + b\vb{i} + c\vb{j} + d\vb{k} \\
+          &= \cos\theta + (b\vb{i} + c\vb{j} + d\vb{k})\sin\theta \\
+        \implies \bar{q} &= a - b\vb{i} - c\vb{j} - d\vb{k} \\
+          &= \cos\theta - (b\vb{i} + c\vb{j} + d\vb{k})\sin\theta
+    \end{aligned}
+\end{equation}
+While $\bar{q}$ here seems to negate the imaginary component and double the real component
+
+MULTIPLICATION IS COMMUTATIVE WITH SCALARS, ONLY NON-COMMUTATIVE WITH VECTORS
 
 theta/2 w sterographic projection.
 
