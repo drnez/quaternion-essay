@@ -647,7 +647,15 @@ Until this point, there have been no undesired effects - multiplying by $\vb{i}$
     \label{LeftMultIFig}
 \end{figure}
 
-The same two rotations occur with any axis of rotation, $A$, not necessarily just $\vb{i}$ or a single imaginary component. This behaviour is undesired, as the each multiplication should represent exactly one rotation around one axis. Therefore, the solution is to multiply the current expression, $qr$, by a third component, that will cancel out the rotation parallel to the axis, but not affect the rotation around it. Right multiplying by $\bar{q}$ has this effect. Using the definition of $\bar{q}$ in Section \ref{qBarDef}:
+We should now consider which components of the quaternion cause each rotation. Expressing $q$ as $\cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta$, and $r$ as $b\vb{i} + c\vb{j} + d\vb{k}$:
+\begin{equation}
+	\begin{aligned}
+		qr &= (\cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta)(b\vb{i} + c\vb{j} + d\vb{k})
+		   &= (b\vb{i} + c\vb{j} + d\vb{k})\cos\theta + (b\vb{i} + c\vb{j} + d\vb{k})(x\vb{i} + y\vb{j} + z\vb{k})\sin\theta
+	\end{aligned}
+\end{equation}
+
+The same two rotations will occur with any axis of rotation, $A$, not necessarily just $\vb{i}$ or a single imaginary component. This behaviour is undesired, as the each multiplication should represent exactly one rotation around one axis. Therefore, the solution is to multiply the current expression, $qr$, by a third component, that will cancel out the rotation parallel to the axis, but not affect the rotation around it. Right multiplying by $\bar{q}$ has this effect. Using the definition of $\bar{q}$ in Section \ref{qBarDef}:
 \begin{equation}
     \begin{aligned}
         q &= a + b\vb{i} + c\vb{j} + d\vb{k} \\
@@ -656,7 +664,8 @@ The same two rotations occur with any axis of rotation, $A$, not necessarily jus
           &= \cos\theta - (b\vb{i} + c\vb{j} + d\vb{k})\sin\theta
     \end{aligned}
 \end{equation}
-While $\bar{q}$ here seems to negate the imaginary component and double the real component
+At this point, it is important to consider the implications of the non-commutativity of quaternion rotation: while the product of two imaginary quaternion components differs based on the order of multiplication, this is not the case when a real number is multiplied by a quaternions component.
+If we consider $qr$ as one point (after all it is equal ot a rotated point), we can then consider the product of $\bar{q}$ with this pure quaternion $qr$. A left multiplication of $\bar{q}$ would 
 
 MULTIPLICATION IS COMMUTATIVE WITH SCALARS, ONLY NON-COMMUTATIVE WITH VECTORS
 
