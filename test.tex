@@ -647,14 +647,6 @@ Until this point, there have been no undesired effects - multiplying by $\vb{i}$
     \label{LeftMultIFig}
 \end{figure}
 
-We should now consider which components of the quaternion cause each rotation. Expressing $q$ as $\cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta$, and $r$ as $b\vb{i} + c\vb{j} + d\vb{k}$:
-\begin{equation}
-	\begin{aligned}
-		qr &= (\cos\theta + (x\vb{i} + y\vb{j} + z\vb{k})\sin\theta)(b\vb{i} + c\vb{j} + d\vb{k})
-		   &= (b\vb{i} + c\vb{j} + d\vb{k})\cos\theta + (b\vb{i} + c\vb{j} + d\vb{k})(x\vb{i} + y\vb{j} + z\vb{k})\sin\theta
-	\end{aligned}
-\end{equation}
-
 The same two rotations will occur with any axis of rotation, $A$, not necessarily just $\vb{i}$ or a single imaginary component. This behaviour is undesired, as the each multiplication should represent exactly one rotation around one axis. Therefore, the solution is to multiply the current expression, $qr$, by a third component, that will cancel out the rotation parallel to the axis, but not affect the rotation around it. Right multiplying by $\bar{q}$ has this effect. Using the definition of $\bar{q}$ in Section \ref{qBarDef}:
 \begin{equation}
     \begin{aligned}
@@ -664,10 +656,16 @@ The same two rotations will occur with any axis of rotation, $A$, not necessaril
           &= \cos\theta - (b\vb{i} + c\vb{j} + d\vb{k})\sin\theta
     \end{aligned}
 \end{equation}
-At this point, it is important to consider the implications of the non-commutativity of quaternion rotation: while the product of two imaginary quaternion components differs based on the order of multiplication, this is not the case when a real number is multiplied by a quaternions component.
-If we consider $qr$ as one point (after all it is equal ot a rotated point), we can then consider the product of $\bar{q}$ with this pure quaternion $qr$. A left multiplication of $\bar{q}$ would 
+To explain why right-multiplying by $\bar{q}$ has this effect, it is important to consider the implications of the non-commutativity of quaternion rotation: while the product of different two imaginary quaternion components differs based on the order of multiplication, this is not the case when a real number is involved in the multiplication (think of this as the real number "scaling" the imaginary component, rather than changing the axis on which it lies), or when one component is multiplied by itself (e.g. \vb{i}\mult\vb{i} = \vb{i}\mult\vb{i}).
+
+If we consider $qr$ as one point (as it is the rotated point), we can then consider the product of $\bar{q}$ with this pure quaternion $qr$. A left multiplication by $\bar{q}$ would completely cancel out the effect of $q$, since $\bar{q}q$ = 1 (REF TO DEFINITION) and quaternion multiplication is associative (i.e. $(\bar{q}q)r = \bar{q}(qr)$).
+Interpreting this through the stereographic visualisation of unit quaternions, left-multiplying $qr$ by $\bar{q}$ would cause a rotation both parallel and perpendicular to the axis of rotation, opposite but equal in magnitude to the rotation a left-multiplication by $q$ caused. More simply, a left-multiplication of $qr$ by $\bar{q}$ yields $r$, cancelling out the effect of $q$.
+
+The desired multiplication is one that causes an equal rotation perpendeicular to the axis of rotation, but an opposite one parallel to it, in effect cancelling out the second, undesired, rotational effect of $q$. Right-multiplying by $\bar{q}$ has this effect, since SAME EFFECT ON PARALLEL AXIS, OPPOSITE ON PERP
 
 MULTIPLICATION IS COMMUTATIVE WITH SCALARS, ONLY NON-COMMUTATIVE WITH VECTORS
+
+ADD PROOF QQBAR = 1 IN CONJUGATE QUATERNION SECTION!
 
 theta/2 w sterographic projection.
 
