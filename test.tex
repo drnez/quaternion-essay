@@ -652,10 +652,10 @@ Until this point, there have been no undesired effects - multiplying by $\vb{i}$
 The same two rotations (both perpendicular and parallel to the axis) will occur with any axis of rotation, $A$, not necessarily just $\vb{i}$ or a single imaginary component. This behaviour is undesired, as the each multiplication should represent exactly one rotation around one axis. Therefore, the solution is to multiply the current expression, $qr$, by a third component, that will cancel out the rotation parallel to the axis, but not affect the rotation around it. Right-multiplying by $\bar{q}$ has this effect. Using the definition of $\bar{q}$ in Section \ref{qBarDef}:
 \begin{equation}
     \begin{aligned}
-        q &= a + b\vb{i} + c\vb{j} + d\vb{k} \\
-          &= \cos\theta + (b\vb{i} + c\vb{j} + d\vb{k})\sin\theta \\
-        \implies \bar{q} &= a - b\vb{i} - c\vb{j} - d\vb{k} \\
-          &= \cos\theta - (b\vb{i} + c\vb{j} + d\vb{k})\sin\theta.
+        q &= a + b_1\vb{i} + c_1\vb{j} + d_1\vb{k} \\
+          &= \cos\theta + (b_2\vb{i} + c_2\vb{j} + d_2\vb{k})\sin\theta \\
+        \implies \bar{q} &= a - b_1\vb{i} - c_1\vb{j} - d_1\vb{k} \\
+          &= \cos\theta - (b_2\vb{i} + c_2\vb{j} + d_2\vb{k})\sin\theta.
     \end{aligned}
 \end{equation}
 To explain why right-multiplying by $\bar{q}$ has this effect, it is important to consider the implications of the non-commutativity of quaternion rotation: while the product of two different imaginary quaternion components differs based on the order of multiplication, this is not the case when a real number is involved in the multiplication (think of this as the real number "scaling" the imaginary component, rather than changing the axis on which it lies), or when one component is multiplied by itself (e.g. $\vb{i}\times\vb{i} = \vb{i}\times\vb{i}$).
